@@ -1,14 +1,35 @@
 Title: Catan
 
+define:
+  - &width 1200
+  - &height 800
+
 Window:
-  width: 1200
-  height: 800
+  width: *width
+  height: *height
 
 
 Background:
   r: 38
   g: 38
   b: 38
+
+Tiles:
+  texture: "assets/art/tilemap.png"
+
+  scale: 2
+  alpha: 255
+
+  Sprites:
+
+    desert: [0, 0, 64, 51]
+    plain: [64, 0, 64, 51]
+    wheat: [128, 0, 64, 51]
+
+  offset: [550, 350]
+
+  u: [96, -48]
+  v: [0, -96]
 
 
 Game:

@@ -1,15 +1,15 @@
 # MacOS
-CC = clang++
+# CC = clang++
 
-# CC = g++
+CC = g++
 CFLAGS = -std=c++17
 TARGET = app
 
-SRCS = src/main.cpp src/wastils/config.cpp
+SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/tiles.cpp
 
 
 OBJS = $(SRCS:.cpp=.o)
-INCDIR = -Isrc/include/ -I/usr/local/include/ 
+INCDIR = -Iinclude/ -I/usr/local/include/ 
 LIBDIR = 
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lyaml-cpp
 

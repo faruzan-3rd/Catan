@@ -1,5 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "wastils/config.hpp"
+#include "catan/tiles.hpp"
 #include <iostream>
 
 
@@ -19,6 +20,9 @@ int main(){
     window.setKeyRepeatEnabled(false);
     sf::Color backgroundColor(config["Background"]["r"].as<int>(), config["Background"]["g"].as<int>(), config["Background"]["b"].as<int>());
 
+    ctn::TileRenderer rend(config, &window);
+    rend.generate_tiles();
+
     std::cout << "Loading finished" << std::endl;
 
     while (window.isOpen())
@@ -32,6 +36,7 @@ int main(){
             }
         }
         window.clear(backgroundColor);
+        rend.draw();
         window.display();
     }  
 }

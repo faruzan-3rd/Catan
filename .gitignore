@@ -11,3 +11,4 @@ x64/
 *.o
 app
 .DS_STORE
+assets/art/tiles/
