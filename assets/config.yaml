@@ -1,0 +1,15 @@
+Title: Catan
+
+Window:
+  width: 1200
+  height: 800
+
+
+Background:
+  r: 38
+  g: 38
+  b: 38
+
+
+Game:
+  framerate: 120
