@@ -15,15 +15,17 @@ namespace ctn {
         YAML::Node config;
         sf::RenderWindow* window_ptr;
         
-        sf::Texture texture;
+        sf::Texture texture, env_texture;
         std::map<ctn::Tile, sf::Sprite> tiles;
+        std::vector<sf::Sprite> sea_tiles;
+        int sea_width, sea_height;
 
         sf::Vector2f tile_offset;
 
         // vectors that define tile coordinates
         sf::Vector2f u, v;
 
-        std::vector<sf::Sprite> tiles_render;
+        std::vector<sf::Sprite> tiles_rend, sea_rend;
 
 
         public:

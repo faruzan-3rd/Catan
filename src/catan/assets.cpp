@@ -1,11 +1,8 @@
 #include "catan/assets.hpp"
 
 
-std::map<ctn::Tile, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::Texture& texture){
+std::map<ctn::Tile, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::Texture& texture, float scale, int alpha){
     std::map<ctn::Tile, sf::Sprite> ret;
-
-    int scale = config["scale"].as<int>();
-    int alpha = config["alpha"].as<int>();
 
     auto sprites = config["Sprites"];
 
@@ -20,4 +17,25 @@ std::map<ctn::Tile, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::
     }
 
     return ret;
+}
+
+std::vector<sf::Sprite> ctn::load_from_list(const YAML::Node& config, sf::Texture& texture, float scale, int alpha){
+    std::vector<std::vector<int>> sprites_rect;
+
+    std::vector<sf::Sprite> sprites(sprites_rect.size());
+
+    for(const YAML::Node elm : config){
+        const std::vector<int>& rect = elm.as<std::vector<int>>();
+        if(rect.size() != 4){
+            std::cout << "Got an incomplete list of rects. Returning an incomplete sprite vector." << std::endl;
+            return sprites;
+        }
+
+        sf::Sprite sprite(texture, sf::IntRect(rect[0], rect[1], rect[2], rect[3]));
+        sprite.setScale(sf::Vector2f(scale, scale));
+        sprite.setColor(sf::Color(255, 255, 255, alpha));
+        sprites.push_back(sprite);
+    }
+
+    return sprites;
 }
