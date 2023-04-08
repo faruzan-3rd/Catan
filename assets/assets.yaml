@@ -1,3 +1,6 @@
+Test:
+  font: "assets/fonts/mariomaker.ttf"
+
 Tiles:
   texture: "assets/art/tilemap.png"
   scale: 2

@@ -12,6 +12,24 @@
 
 namespace ctn {
 
+    class BoardTile{
+        sf::Sprite sprite;
+        ctn::Tile tile_type;
+        sf::RenderWindow* window;
+        sf::Vector2f coordinates;
+
+        public:
+        BoardTile();
+        BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, sf::Vector2f coordinates_);
+
+        void draw();
+
+        sf::Vector2f get_position() const;
+
+        ctn::Tile get_type() const;
+    };
+
+
     class TileRenderer{
         YAML::Node general_config, tiles_config, env_config;
         sf::RenderWindow* window_ptr;
@@ -26,7 +44,8 @@ namespace ctn {
         // vectors that define tile coordinates
         sf::Vector2f u, v;
 
-        std::vector<sf::Sprite> tiles_rend, sea_rend;
+        std::vector<sf::Sprite> sea_rend;
+        std::vector<ctn::BoardTile> tiles_rend;
 
 
         public:
@@ -35,6 +54,8 @@ namespace ctn {
         void load_assets(const YAML::Node& config_, sf::RenderWindow* window_ptr_);
 
         void generate_tiles();
+
+        std::vector<ctn::BoardTile> get_tiles() const;
 
         void draw();
     };

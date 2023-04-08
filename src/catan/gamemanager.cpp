@@ -15,6 +15,7 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_){
 
     board.load_assets(config_, window);
     board.generate_graph();
+    board.associate_resources(tile_renderer.get_tiles());
 }
 
 

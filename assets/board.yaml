@@ -1,3 +1,7 @@
+max: 3
+search_distance: 90
+tiles_center_offset: [64, 48]
+
 offset: [630, 620]
 u: [64, 0]
 v: [32, -48]
