@@ -5,7 +5,8 @@ CC = g++
 CFLAGS = -std=c++17
 TARGET = app
 
-SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/tiles.cpp
+SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/tiles.cpp src/catan/board.cpp\
+		src/catan/gamemanager.cpp
 
 
 OBJS = $(SRCS:.cpp=.o)

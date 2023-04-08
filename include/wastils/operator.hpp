@@ -5,7 +5,7 @@
 #include "SFML/Graphics.hpp"
 
 
-sf::Vector2f operator*(const sf::Vector2f lhs, const int& rhs){
+inline sf::Vector2f operator*(const sf::Vector2f lhs, const int& rhs){
     return sf::Vector2f(lhs.x * rhs, lhs.y * rhs);
 }
 

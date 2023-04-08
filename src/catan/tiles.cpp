@@ -1,25 +1,28 @@
 #include "catan/tiles.hpp"
-#include "wastils/operator.hpp"
 
 
 ctn::TileRenderer::TileRenderer(){
 
 }
 
-ctn::TileRenderer::TileRenderer(const YAML::Node& config_, sf::RenderWindow* window_ptr_){
+
+void ctn::TileRenderer::load_assets(const YAML::Node& config_, sf::RenderWindow* window_ptr_){
     window_ptr = window_ptr_;
-    config = config_["Tiles"];
-    texture.loadFromFile(config["texture"].as<std::string>());
-    env_texture.loadFromFile(config["Environment"]["texture"].as<std::string>());
-    tiles = load_sprites(config, texture, config["scale"].as<float>());
+    std::cout << was::load_config(general_config, config_["Game"]["assets"].as<std::string>()) << std::endl;;
+    tiles_config = general_config["Tiles"];
+    env_config = general_config["Environment"];
 
-    tile_offset = sf::Vector2f(config["offset"][0].as<int>(), config["offset"][1].as<int>());
-    u = sf::Vector2f(config["u"][0].as<int>(), config["u"][1].as<int>());
-    v = sf::Vector2f(config["v"][0].as<int>(), config["v"][1].as<int>());
+    std::cout << "Tile texutre: " << texture.loadFromFile(tiles_config["texture"].as<std::string>()) << std::endl;
+    tiles = load_sprites(tiles_config, texture, tiles_config["scale"].as<float>());
 
-    sea_tiles = ctn::load_from_list(config["Environment"]["Sea"]["Sprites"], env_texture, config["Environment"]["Sea"]["scale"].as<int>());
-    sea_width = config["Environment"]["Sea"]["size"][0].as<int>();  
-    sea_height = config["Environment"]["Sea"]["size"][1].as<int>();
+    tile_offset = sf::Vector2f(tiles_config["offset"][0].as<int>(), tiles_config["offset"][1].as<int>());
+    u = sf::Vector2f(tiles_config["u"][0].as<int>(), tiles_config["u"][1].as<int>());
+    v = sf::Vector2f(tiles_config["v"][0].as<int>(), tiles_config["v"][1].as<int>());
+
+    env_texture.loadFromFile(env_config["texture"].as<std::string>());
+    sea_tiles = ctn::load_from_list(env_config["Sea"]["Sprites"], env_texture, env_config["Sea"]["scale"].as<int>());
+    sea_width = env_config["Sea"]["size"][0].as<int>();  
+    sea_height = env_config["Sea"]["size"][1].as<int>();
 }
 
 void ctn::TileRenderer::generate_tiles(){

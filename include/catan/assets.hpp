@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include "wastils/config.hpp"
 #include "catan/constants.hpp"
 #include "yaml-cpp/yaml.h"
 #include "SFML/Graphics.hpp"
@@ -13,6 +14,8 @@
 namespace ctn{
     
     std::map<ctn::Tile, sf::Sprite> load_sprites(const YAML::Node& config, sf::Texture& texture, float scale=1.0, int alpha=255);
+
+    std::map<std::string, sf::Sprite> load_sprites(const YAML::Node& config, sf::Texture& texture, const std::vector<std::string> load_list, float scale=1.0, int alpha=255);
 
     std::vector<sf::Sprite> load_from_list(const YAML::Node& config, sf::Texture& texture, float scale=1.0, int alpha=255);
     

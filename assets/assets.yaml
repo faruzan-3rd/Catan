@@ -1,0 +1,39 @@
+Tiles:
+  texture: "assets/art/tilemap.png"
+  scale: 2
+  offset: [550, 350]
+  u: [96, -48]
+  v: [0, -96]
+
+  Sprites:
+    desert: [0, 0, 64, 51]
+    plain: [64, 0, 64, 51]
+    wheat: [128, 0, 64, 51]
+    mountain: [192, 0, 64, 51]
+    brick: [0, 51, 64, 51]
+    forest: [64, 51, 64, 51]
+
+
+Environment:
+    texture: "assets/art/environment.png"
+
+    Sea:
+      size: [18, 13]
+      scale: 2
+
+      Sprites:
+        - [0, 0, 64, 64]
+
+
+Board:
+  texture: "assets/art/board_objects.png"
+
+  Buildings:
+    house_scale: 1
+    path_scale: 1
+
+    Sprites:
+      house: [0, 0, 32, 32]
+      horizontal: [32, 0, 32, 32]
+      left_diag: [64, 0, 32, 32]
+      right_diag: [96, 0, 32, 32]

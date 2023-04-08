@@ -5,6 +5,7 @@
 #include "yaml-cpp/yaml.h"
 #include "catan/constants.hpp"
 #include "catan/assets.hpp"
+#include "wastils/operator.hpp"
 #include <vector>
 #include <random>
 
@@ -12,7 +13,7 @@
 namespace ctn {
 
     class TileRenderer{
-        YAML::Node config;
+        YAML::Node general_config, tiles_config, env_config;
         sf::RenderWindow* window_ptr;
         
         sf::Texture texture, env_texture;
@@ -30,8 +31,8 @@ namespace ctn {
 
         public:
         TileRenderer();
-
-        TileRenderer(const YAML::Node& config_, sf::RenderWindow* window_ptr_);
+        
+        void load_assets(const YAML::Node& config_, sf::RenderWindow* window_ptr_);
 
         void generate_tiles();
 

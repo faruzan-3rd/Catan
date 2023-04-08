@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace ctn{
 
@@ -31,6 +32,18 @@ namespace ctn{
         {ctn::Tile::MOUNTAIN, "mountain"},
         {ctn::Tile::BRICK, "brick"},
         {ctn::Tile::FOREST, "forest"}
+    };
+
+    static const std::string HOUSE{"house"};
+    static const std::string HORIZONTAL{"horizontal"};
+    static const std::string LEFT_DIAGONAL{"left_diag"};
+    static const std::string RIGHT_DIAGONAL{"right_diag"};
+
+    static const std::vector<std::string> building_types = {
+        ctn::HOUSE,
+        ctn::HORIZONTAL,
+        ctn::LEFT_DIAGONAL,
+        ctn::RIGHT_DIAGONAL
     };
 }
 

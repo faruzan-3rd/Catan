@@ -13,34 +13,7 @@ Background:
   g: 38
   b: 38
 
-Tiles:
-  texture: "assets/art/tilemap.png"
-  scale: 2
-
-  Sprites:
-    desert: [0, 0, 64, 51]
-    plain: [64, 0, 64, 51]
-    wheat: [128, 0, 64, 51]
-    mountain: [192, 0, 64, 51]
-    brick: [0, 51, 64, 51]
-    forest: [64, 51, 64, 51]
-
-  Environment:
-    texture: "assets/art/environment.png"
-
-    Sea:
-      size: [18, 13]
-      scale: 2
-
-      Sprites:
-        - [0, 0, 64, 64]
-    
-
-  offset: [550, 350]
-
-  u: [96, -48]
-  v: [0, -96]
-
-
 Game:
   framerate: 120
+  assets: "assets/assets.yaml"
+  board: "assets/board.yaml"
