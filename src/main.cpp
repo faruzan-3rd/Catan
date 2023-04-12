@@ -9,7 +9,8 @@ int main(){
     if(was::load_config(config, "assets/config.yaml") == 1){
         return 1;
     }
-    
+
+
     int sc_w = config["Window"]["width"].as<int>(), sc_h = config["Window"]["height"].as<int>();
     std::string title = config["Title"].as<std::string>();
     sf::RenderWindow window(sf::VideoMode(sc_w, sc_h), title, sf::Style::Titlebar | sf::Style::Close);

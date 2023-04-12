@@ -27,3 +27,8 @@ search_directions:
     - [64, 0]
     - [32, -48]
     - [32, 48]
+
+dir_names:
+    horizontal: [64, 0]
+    left_diag: [32, -48]
+    right_diag: [32, 48]

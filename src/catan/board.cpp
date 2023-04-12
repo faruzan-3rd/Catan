@@ -125,23 +125,86 @@ void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
     }
 }
 
-void ctn::Board::generate_graph(){
-    std::vector<std::pair<int, int>> search_directions;
 
-    for(YAML::Node nd : config){
+sf::Vector2f ctn::Board::is_connected(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions, int max_radius){
+    for(const sf::Vector2f& dir : directions){
+        if(was::distance_sq(pl1.get_position() + dir, pl2.get_position()) <= max_radius * max_radius){
+            return dir;
+        }      
+    }
+
+    return sf::Vector2f(0, 0);
+}
+
+std::string ctn::Board::get_path_type(sf::Vector2f dir){
+    std::vector<sf::Vector2f> dirs;
+    std::vector<std::string> dirs_type;
+    
+    for(std::string path_type : ctn::path_types){
+        int x = config["dir_names"][path_type][0].as<int>();
+        int y = config["dir_names"][path_type][1].as<int>();
+
+        dirs.push_back(sf::Vector2f(x, y));
+        dirs_type.push_back(path_type);
+    }
+
+    for(int i = 0; i < dirs.size(); i++){
+        if(dir == dirs[i]){
+            return dirs_type[i];
+        }
+    }
+    std::cout << "WHat?" << std::endl;
+    return "Nope";
+}
+
+void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions){
+    sf::Vector2f dir = is_connected(pl1, pl2, directions);
+    if(dir != sf::Vector2f(0, 0)){
+        int done_path_id = -1;
+        for(const PathData& pd : graph[pl2.get_id()]){
+            if(pd.to == pl1.get_id()){
+                done_path_id = pd.path_id;
+                break;
+            }
+        }
+
+
+        if(done_path_id == -1){
+            std::string path_type = get_path_type(dir);
+            path_rend.push_back(Path(sprites[path_type], path_type));
+            graph[pl1.get_id()].push_back(PathData(pl2.get_id(), path_rend.size() - 1));
+        }else{
+            graph[pl1.get_id()].push_back(PathData(pl2.get_id(), done_path_id));
+        }
+    }
+}
+
+void ctn::Board::generate_graph(){
+    graph = std::vector<std::vector<PathData>>(places.size(), std::vector<PathData>(0));
+    std::vector<sf::Vector2f> search_directions;
+
+    for(YAML::Node nd : config["search_directions"]){
         int x, y;
-        x = nd.as<int>();
-        y = nd.as<int>();
-        search_directions.push_back(std::make_pair(x, y));
-        search_directions.push_back(std::make_pair(-x, -y));
+        x = nd[0].as<int>();
+        y = nd[1].as<int>();
+        search_directions.push_back(sf::Vector2f(x, y));
+        search_directions.push_back(sf::Vector2f(-x, -y));
     }
 
     for(Place& place : places){
         for(Place& target : places){
-            if(is_connected(place, target, search_directions)){
-
-            } 
+            make_path_if_exist(place, target, search_directions);
         }
+    }
+
+    
+    for(int i = 0; i < graph.size(); i++){
+        std::cout << "House " << i << " is connected to: ";        
+        for(PathData pd : graph[i]){
+            std::cout << pd.to << " ";
+        }
+
+        std::cout << std::endl;
     }
 }
 

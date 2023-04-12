@@ -37,11 +37,21 @@ namespace ctn{
     struct Path{
         sf::Sprite sprite;
         std::string path_typ;
+
+        Path(){}
+        Path(sf::Sprite sp, std::string path_typ_){
+            sprite = sp; path_typ = path_typ_;
+        }
     };
 
     struct PathData{
         int to;
-        Path* path;
+        int path_id;
+
+        PathData(){}
+        PathData(int to_, int path_id_){
+            to = to_; path_id = path_id_;
+        }
     };
     
     class Board{
@@ -56,6 +66,7 @@ namespace ctn{
 
         std::vector<ctn::Place> places;
         std::vector<std::vector<ctn::PathData>> graph;
+        std::vector<ctn::Path> path_rend;
 
         public:
         Board();
@@ -68,9 +79,9 @@ namespace ctn{
         void attribute_resources(const std::vector<ctn::BoardTile>& tiles);
 
         private:
-        void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<std::pair<int, int>>& directions);
-        bool is_connected(Place& pl1, Place& pl2, const std::vector<std::pair<int, int>>& directions, int max_radius=5);
-        std::string get_path_type(std::pair<int, int> dir);
+        void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions);
+        sf::Vector2f is_connected(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions, int max_radius=5);
+        std::string get_path_type(sf::Vector2f dir);
     };
 }
 
