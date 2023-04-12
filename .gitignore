@@ -12,3 +12,5 @@ x64/
 app
 .DS_STORE
 assets/art/tiles/
+compile_commands.json
+.cache/

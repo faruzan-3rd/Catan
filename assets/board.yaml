@@ -1,6 +1,7 @@
 max: 3
 search_distance: 90
 tiles_center_offset: [64, 48]
+adjacent_search_distance: 60
 
 offset: [630, 620]
 u: [64, 0]
@@ -21,4 +22,8 @@ shape:
     - [6, -1, 8, 1]
     - [4, -3, 9, 1]
     - [2, -5, 10, 1]
-  
+
+search_directions:
+    - [64, 0]
+    - [32, -48]
+    - [32, 48]

@@ -33,6 +33,16 @@ namespace ctn{
         sf::Vector2f get_position() const;
         void add_resource(ctn::Tile resource);
     };
+
+    struct Path{
+        sf::Sprite sprite;
+        std::string path_typ;
+    };
+
+    struct PathData{
+        int to;
+        Path* path;
+    };
     
     class Board{
         sf::RenderWindow* window;
@@ -45,15 +55,22 @@ namespace ctn{
         was::Text* house_id = nullptr;
 
         std::vector<ctn::Place> places;
+        std::vector<std::vector<ctn::PathData>> graph;
 
         public:
         Board();
         ~Board();
 
         void load_assets(YAML::Node config_, sf::RenderWindow* window_);
+        void generate_board();
         void generate_graph();
         void draw();
-        void associate_resources(const std::vector<ctn::BoardTile>& tiles);
+        void attribute_resources(const std::vector<ctn::BoardTile>& tiles);
+
+        private:
+        void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<std::pair<int, int>>& directions);
+        bool is_connected(Place& pl1, Place& pl2, const std::vector<std::pair<int, int>>& directions, int max_radius=5);
+        std::string get_path_type(std::pair<int, int> dir);
     };
 }
 

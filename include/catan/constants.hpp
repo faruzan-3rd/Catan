@@ -39,13 +39,17 @@ namespace ctn{
     static const std::string LEFT_DIAGONAL{"left_diag"};
     static const std::string RIGHT_DIAGONAL{"right_diag"};
 
-    static const std::vector<std::string> building_types = {
-        ctn::HOUSE,
+    static const std::vector<std::string> path_types = {
         ctn::HORIZONTAL,
         ctn::LEFT_DIAGONAL,
         ctn::RIGHT_DIAGONAL
     };
+
+    static const std::vector<std::string> house_types = {
+        ctn::HOUSE
+    };
+    
+    // static const std::vector<std::string> building_types = house_types + path_types;
+
 }
-
-
 #endif

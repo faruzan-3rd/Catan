@@ -49,12 +49,14 @@ void ctn::Board::load_assets(YAML::Node config_, sf::RenderWindow* window_){
     window = window_;
 
     texture.loadFromFile(assets_cfg["texture"].as<std::string>());
-    sprites = ctn::load_sprites(assets_cfg["Buildings"], texture, ctn::building_types);
+    std::vector<std::string> building_types = ctn::house_types;
+    building_types.insert(building_types.end(), ctn::path_types.begin(), ctn::path_types.end());
+    sprites = ctn::load_sprites(assets_cfg["Buildings"], texture, building_types);
 
     house_id = new was::Text("", font, window, 14, sf::Color::Black, sf::Vector2f(0, 0));
 }
 
-void ctn::Board::generate_graph(){
+void ctn::Board::generate_board(){
     sf::Vector2f u(config["u"][0].as<int>(), config["u"][1].as<int>());
     sf::Vector2f v(config["v"][0].as<int>(), config["v"][1].as<int>());
     sf::Vector2f place_offset(config["offset"][0].as<int>(), config["offset"][1].as<int>());
@@ -95,31 +97,51 @@ void ctn::Board::draw(){
     }
 }
 
-void ctn::Board::associate_resources(const std::vector<ctn::BoardTile>& tiles){
-    typedef std::pair<sf::Vector2f, ctn::Tile> Ressource;
+void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
+    typedef std::pair<sf::Vector2f, ctn::Tile> Resource;
 
-    int max_ressources = config["max"].as<int>();
+    int max_resources = config["max"].as<int>();
     int search_distance = config["search_distance"].as<int>();
     sf::Vector2f tiles_offset(config["tiles_center_offset"][0].as<int>(), config["tiles_center_offset"][1].as<int>());
     
-    std::vector<Ressource> ressources;
+    std::vector<Resource> resources;
     for(const ctn::BoardTile& bt : tiles){
-        ressources.push_back(std::make_pair(bt.get_position() + tiles_offset, bt.get_type()));
+        resources.push_back(std::make_pair(bt.get_position() + tiles_offset, bt.get_type()));
     }
 
     for(Place& place : places){
-        std::sort(ressources.begin(), ressources.end(), [&place](const Ressource& lhs, const Ressource& rhs){
+        std::sort(resources.begin(), resources.end(), [&place](const Resource& lhs, const Resource& rhs){
             return was::distance_sq(place.get_position(), lhs.first) < was::distance_sq(place.get_position(), rhs.first);
         });
 
-        std::cout << "Ressources for place id [" << place.get_id() << "]: ";
-        for(int i = 0; i < max_ressources; i++){
-            if(was::distance_sq(place.get_position(), ressources[i].first) > search_distance * search_distance) continue;
+        std::cout << "Resources for place id [" << place.get_id() << "]: ";
+        for(int i = 0; i < max_resources; i++){
+            if(was::distance_sq(place.get_position(), resources[i].first) > search_distance * search_distance) continue;
 
-            place.add_resource(ressources[i].second);
-            std::cout << ctn::enum2str.at(ressources[i].second) << " ";
+            place.add_resource(resources[i].second);
+            std::cout << ctn::enum2str.at(resources[i].second) << " ";
         }
         std::cout << std::endl;
+    }
+}
+
+void ctn::Board::generate_graph(){
+    std::vector<std::pair<int, int>> search_directions;
+
+    for(YAML::Node nd : config){
+        int x, y;
+        x = nd.as<int>();
+        y = nd.as<int>();
+        search_directions.push_back(std::make_pair(x, y));
+        search_directions.push_back(std::make_pair(-x, -y));
+    }
+
+    for(Place& place : places){
+        for(Place& target : places){
+            if(is_connected(place, target, search_directions)){
+
+            } 
+        }
     }
 }
 
