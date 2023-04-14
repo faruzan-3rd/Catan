@@ -32,3 +32,8 @@ dir_names:
     horizontal: [64, 0]
     left_diag: [32, -48]
     right_diag: [32, 48]
+
+path_position_offset:
+    horizontal: [32, 1]
+    left_diag: [32, 48]
+    right_diag: [16, 48]
