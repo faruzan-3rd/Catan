@@ -40,3 +40,9 @@ Board:
       horizontal: [32, 0, 32, 32]
       left_diag: [64, 0, 32, 32]
       right_diag: [96, 0, 32, 32]
+
+    Color-offsets:
+      red: [0, 32]
+      blue: [0, 64]
+      yellow: [0, 96]
+      green: [0, 128]

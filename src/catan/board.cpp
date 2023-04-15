@@ -49,9 +49,20 @@ void ctn::Board::load_assets(YAML::Node config_, sf::RenderWindow* window_){
     window = window_;
 
     texture.loadFromFile(assets_cfg["texture"].as<std::string>());
-    std::vector<std::string> building_types = ctn::house_types;
-    building_types.insert(building_types.end(), ctn::path_types.begin(), ctn::path_types.end());
-    sprites = ctn::load_sprites(assets_cfg["Buildings"], texture, building_types);
+    
+    std::vector<std::string> building_types = ctn::house_types + ctn::path_types;
+
+    std::map<std::string, sf::Sprite> tmp;
+    for(std::string color : colors){
+        int offset_x, offset_y;
+        offset_x = assets_cfg["Buildings"]["Color-offsets"][color][0].as<int>();
+        offset_y = assets_cfg["Buildings"]["Color-offsets"][color][1].as<int>();
+
+        tmp = ctn::load_sprites(assets_cfg["Buildings"], texture, building_types, 1.0f, 255, offset_x, offset_y, color);
+        for(auto p : tmp){
+            sprites[p.first] = p.second;
+        }
+    }
 
     house_id = new was::Text("", font, window, 14, sf::Color::Black, sf::Vector2f(0, 0));
 }
@@ -79,7 +90,7 @@ void ctn::Board::generate_board(){
     
         sf::Vector2f horizontal_offset(0, 0);
         for(int i = 0; i < num; i++){
-            ctn::Place place(window, sprites[ctn::HOUSE], row_start + horizontal_offset, {}, places.size());
+            ctn::Place place(window, sprites[ctn::RED + ctn::HOUSE], row_start + horizontal_offset, {}, places.size());
 
             places.push_back(place);
             horizontal_offset += interval[(i + start_with_short) % 2];
@@ -118,14 +129,10 @@ void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
             return was::distance_sq(place.get_position(), lhs.first) < was::distance_sq(place.get_position(), rhs.first);
         });
 
-        std::cout << "Resources for place id [" << place.get_id() << "]: ";
         for(int i = 0; i < max_resources; i++){
             if(was::distance_sq(place.get_position(), resources[i].first) > search_distance * search_distance) continue;
-
             place.add_resource(resources[i].second);
-            // std::cout << ctn::enum2str.at(resources[i].second) << " ";
         }
-        std::cout << std::endl;
     }
 }
 
@@ -147,8 +154,6 @@ std::string ctn::Board::get_path_type(sf::Vector2f dir){
     for(std::string path_type : ctn::path_types){
         int x = config["dir_names"][path_type][0].as<int>();
         int y = config["dir_names"][path_type][1].as<int>();
-        
-        std::cout << path_type << " " << x << ' ' << y << std::endl;
 
         dirs.push_back(sf::Vector2f(x, y));
         dirs_type.push_back(path_type);
@@ -168,7 +173,6 @@ std::string ctn::Board::get_path_type(sf::Vector2f dir){
 void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions){
     std::map<std::string, sf::Vector2f> path_position_offset;
     for(std::string path_type : ctn::path_types){
-        std::cout << path_type << std::endl;
         path_position_offset[path_type] = sf::Vector2f(
                 config["path_position_offset"][path_type][0].as<int>(),
                 config["path_position_offset"][path_type][1].as<int>()
@@ -189,15 +193,15 @@ void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf
 
         if(done_path_id == -1){
             std::string path_type = get_path_type(dir);
-            // std::cout << path_type << std::endl;
-            sprites[path_type].setPosition(sf::Vector2f(std::min(
+            std::string path_final_name = ctn::BLUE + path_type;
+            sprites[path_final_name].setPosition(sf::Vector2f(std::min(
                             pl1.get_position().x,
                             pl2.get_position().x),
                                         std::min(
                                             pl1.get_position().y, 
                                             pl2.get_position().y))
                             + path_position_offset[path_type]);
-            path_rend.push_back(Path(sprites[path_type], path_type));
+            path_rend.push_back(Path(sprites[path_final_name], path_type));
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), path_rend.size() - 1));
         }else{
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), done_path_id));
@@ -221,16 +225,6 @@ void ctn::Board::generate_graph(){
         for(Place& target : places){
             make_path_if_exist(place, target, search_directions);
         }
-    }
-
-    
-    for(int i = 0; i < graph.size(); i++){
-        // std::cout << "House " << i << " is connected to: ";        
-        for(PathData pd : graph[i]){
-           // std::cout << pd.to << " ";
-        }
-
-        // std::cout << std::endl;
     }
 }
 

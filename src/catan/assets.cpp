@@ -19,7 +19,7 @@ std::map<ctn::Tile, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::
     return ret;
 }
 
-std::map<std::string, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::Texture& texture, const std::vector<std::string> load_list, float scale, int alpha){
+std::map<std::string, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::Texture& texture, const std::vector<std::string> load_list, float scale, int alpha, int offset_x, int offset_y, std::string prefix){
     std::map<std::string, sf::Sprite> ret;
 
     auto sprites = config["Sprites"];
@@ -28,10 +28,10 @@ std::map<std::string, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf
         auto pos = sprites[block_type];
         int width = pos[2].as<int>();
         int height = pos[3].as<int>();
-        sf::Sprite sprite(texture, sf::IntRect(pos[0].as<int>(), pos[1].as<int>(), width, height));
+        sf::Sprite sprite(texture, sf::IntRect(pos[0].as<int>() + offset_x, pos[1].as<int>() + offset_y, width, height));
         sprite.setScale(sf::Vector2f(scale, scale));
         sprite.setColor(sf::Color(255, 255, 255, alpha));
-        ret[block_type] = sprite;
+        ret[prefix + block_type] = sprite;
     }
 
     return ret;

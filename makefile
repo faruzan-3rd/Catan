@@ -1,7 +1,7 @@
 # MacOS
-CC = clang++
+# CC = clang++
 
-# CC = g++
+CC = g++
 CFLAGS = -std=c++17
 TARGET = app
 

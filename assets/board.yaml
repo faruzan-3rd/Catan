@@ -34,6 +34,20 @@ dir_names:
     right_diag: [32, 48]
 
 path_position_offset:
-    horizontal: [32, 1]
-    left_diag: [32, 48]
-    right_diag: [16, 48]
+    horizontal: [32, 3]
+    left_diag: [16, 25]
+    right_diag: [15, 25]
+
+tiles_num:
+    desert: 1
+    plain: 4
+    wheat: 4
+    mountain: 3
+    brick: 3
+    forest: 4
+
+token_sprite: "assets/art/token.png"
+tokens: [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11]
+token_placement: [3, 8, 13, 16, 18, 17, 15, 10, 5, 2, 0, 1, 6, 11, 14, 12, 7, 4, 9]
+token_offset: [45, 35]
+token_txt_offset: [55, 40]

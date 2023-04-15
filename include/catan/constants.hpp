@@ -49,7 +49,18 @@ namespace ctn{
         ctn::HOUSE
     };
     
-    // static const std::vector<std::string> building_types = house_types + path_types;
+    
+    static const std::string RED{"red"};
+    static const std::string BLUE{"blue"};
+    static const std::string YELLOW{"yellow"};
+    static const std::string GREEN{"green"};
+
+    static const std::vector<std::string> colors = {
+        ctn::RED,
+        ctn::BLUE,
+        ctn::YELLOW,
+        ctn::GREEN
+    };
 
 }
 #endif
