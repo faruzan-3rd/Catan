@@ -6,7 +6,7 @@ ctn::BoardTile::BoardTile(){
     
 }
 
-ctn::BoardTile::BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, sf::Vector2f coordinates_){
+ctn::BoardTile::BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, vec2f coordinates_){
     sprite = sprite_;
     tile_type = tile_type_;
     window = window_;
@@ -19,7 +19,7 @@ void ctn::BoardTile::draw(){
     window->draw(sprite);
 }   
 
-sf::Vector2f ctn::BoardTile::get_position() const{
+vec2f ctn::BoardTile::get_position() const{
     return coordinates;
 }
 
@@ -60,12 +60,12 @@ void ctn::TileRenderer::load_assets(const YAML::Node& config_, sf::RenderWindow*
     std::cout << "Tile texutre: " << texture.loadFromFile(tiles_config["texture"].as<std::string>()) << std::endl;
     tiles = load_sprites(tiles_config, texture, tiles_config["scale"].as<float>());
 
-    tile_offset = sf::Vector2f(tiles_config["offset"][0].as<int>(), tiles_config["offset"][1].as<int>());
-    u = sf::Vector2f(tiles_config["u"][0].as<int>(), tiles_config["u"][1].as<int>());
-    v = sf::Vector2f(tiles_config["v"][0].as<int>(), tiles_config["v"][1].as<int>());
+    tile_offset = vec2f(tiles_config["offset"][0].as<int>(), tiles_config["offset"][1].as<int>());
+    u = vec2f(tiles_config["u"][0].as<int>(), tiles_config["u"][1].as<int>());
+    v = vec2f(tiles_config["v"][0].as<int>(), tiles_config["v"][1].as<int>());
 
-    token_offset = sf::Vector2f(board_config["token_offset"][0].as<int>(), board_config["token_offset"][1].as<int>());
-    token_txt_offset = sf::Vector2f(board_config["token_txt_offset"][0].as<int>(), board_config["token_txt_offset"][1].as<int>());
+    token_offset = vec2f(board_config["token_offset"][0].as<int>(), board_config["token_offset"][1].as<int>());
+    token_txt_offset = vec2f(board_config["token_txt_offset"][0].as<int>(), board_config["token_txt_offset"][1].as<int>());
 
     env_texture.loadFromFile(env_config["texture"].as<std::string>());
     sea_tiles = ctn::load_from_list(env_config["Sea"]["Sprites"], env_texture, env_config["Sea"]["scale"].as<int>());
@@ -73,7 +73,7 @@ void ctn::TileRenderer::load_assets(const YAML::Node& config_, sf::RenderWindow*
     sea_height = env_config["Sea"]["size"][1].as<int>();
 
     font.loadFromFile(general_config["Test"]["font"].as<std::string>());
-    tile_token_txt = new was::Text("", font, window_ptr, 18, sf::Color::Black, sf::Vector2f(0, 0));
+    tile_token_txt = new was::Text("", font, window_ptr, 18, sf::Color::Black, vec2f(0, 0));
     token_img.loadFromFile(board_config["token_sprite"].as<std::string>());
     token_rend.setTexture(token_img);
 }
@@ -89,7 +89,7 @@ void ctn::TileRenderer::generate_tiles(){
     }
     std::shuffle(tiles_shuffle.begin(), tiles_shuffle.end(), engine);
 
-    sf::Vector2f tile_position;
+    vec2f tile_position;
 
     int tile_shape[] = {3, 4, 5, 4, 3};
     int start_index[] = {5, 2, 0, 1, 3};

@@ -14,6 +14,7 @@
 #include "SFML/Graphics.hpp"
 #include "yaml-cpp/yaml.h"
 
+typedef sf::Vector2f vec2f;
 
 namespace ctn{
     struct Port{
@@ -24,14 +25,14 @@ namespace ctn{
         int required_num;
     
         Port();
-        Port(sf::Sprite sprite_, sf::Sprite resource_sprite_, sf::RenderWindow* window_, std::string req_mat_, int req_num_, sf::Vector2f mat_offset_, sf::Vector2f pl1, sf::Vector2f pl2);
+        Port(sf::Sprite sprite_, sf::Sprite resource_sprite_, sf::RenderWindow* window_, std::string req_mat_, int req_num_, vec2f mat_offset_, vec2f pl1, vec2f pl2);
 
         void draw();
     };
     
     class Place{
         sf::RenderWindow* window;
-        sf::Vector2f pos;
+        vec2f pos;
         std::vector<int> connected_to;
         std::vector<ctn::Tile> available_resources;
         int port_id;
@@ -41,15 +42,15 @@ namespace ctn{
 
         public:
         Place();
-        Place(sf::RenderWindow* window_, sf::Sprite sprite, sf::Vector2f coords, std::vector<int> connected_to_, int id_);
+        Place(sf::RenderWindow* window_, sf::Sprite sprite, vec2f coords, std::vector<int> connected_to_, int id_);
 
         void draw();
         int get_id() const;
-        sf::Vector2f get_position() const;
+        vec2f get_position() const;
         void add_resource(ctn::Tile resource);
         void set_port(int port_id_);
         void set_sprite(sf::Sprite sprite_);
-        bool is_clicked(const sf::Vector2f& mouse_pos);
+        bool is_clicked(const vec2f& mouse_pos);
     };
 
 
@@ -63,7 +64,7 @@ namespace ctn{
         }
 
         void set_sprite(sf::Sprite sprite_);
-        bool is_clicked(const sf::Vector2f& mouse_pos);
+        bool is_clicked(const vec2f& mouse_pos);
     };
 
 
@@ -80,7 +81,7 @@ namespace ctn{
     class Board{
         sf::RenderWindow* window;
         std::map<std::string, sf::Sprite> sprites, port_mat_sprites;
-        sf::Vector2f u, v;
+        vec2f u, v;
         sf::Texture texture, env_texture;
         YAML::Node config, assets_cfg;
 
@@ -102,12 +103,12 @@ namespace ctn{
         void generate_ports();
         void draw();
         void attribute_resources(const std::vector<ctn::BoardTile>& tiles);
-        void click(const sf::Vector2f& mouse_pos);
+        void click(const vec2f& mouse_pos);
 
         private:
-        void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions);
-        sf::Vector2f is_connected(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions, int max_radius=5);
-        std::string get_path_type(sf::Vector2f dir);
+        void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions);
+        vec2f is_connected(Place& pl1, Place& pl2, const std::vector<vec2f>& directions, int max_radius=5);
+        std::string get_path_type(vec2f dir);
     };
 }
 

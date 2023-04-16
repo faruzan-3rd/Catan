@@ -10,6 +10,8 @@
 #include <vector>
 #include <random>
 
+typedef sf::Vector2f vec2f;
+
 
 namespace ctn {
 
@@ -17,16 +19,16 @@ namespace ctn {
         sf::Sprite sprite;
         ctn::Tile tile_type;
         sf::RenderWindow* window;
-        sf::Vector2f coordinates;
+        vec2f coordinates;
         int token;
 
         public:
         BoardTile();
-        BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, sf::Vector2f coordinates_);
+        BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, vec2f coordinates_);
 
         void draw();
 
-        sf::Vector2f get_position() const;
+        vec2f get_position() const;
 
         ctn::Tile get_type() const;
 
@@ -45,10 +47,10 @@ namespace ctn {
         std::vector<sf::Sprite> sea_tiles;
         int sea_width, sea_height;
 
-        sf::Vector2f tile_offset, token_offset, token_txt_offset;
+        vec2f tile_offset, token_offset, token_txt_offset;
 
         // vectors that define tile coordinates
-        sf::Vector2f u, v;
+        vec2f u, v;
 
         std::vector<sf::Sprite> sea_rend;
         std::vector<ctn::BoardTile> tiles_rend;
