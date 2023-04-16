@@ -4,8 +4,11 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <math.h>
 
 namespace ctn{
+
+    const double rad2deg{180.0 / M_PI};
 
     enum class Tile{
         DESERT,
@@ -60,6 +63,21 @@ namespace ctn{
         ctn::BLUE,
         ctn::YELLOW,
         ctn::GREEN
+    };
+
+    static const std::string mWOOL{"wool"};
+    static const std::string mORE{"ore"};
+    static const std::string mBRICK{"brick"};
+    static const std::string mWHEAT{"wheat"};
+    static const std::string mWOOD{"wood"};
+    static const std::string mANY{"any"};
+
+    static const std::vector<std::string> materials = {
+        ctn::mWOOL,
+        ctn::mWOOD,
+        ctn::mORE,
+        ctn::mBRICK,
+        ctn::mWHEAT
     };
 
 }

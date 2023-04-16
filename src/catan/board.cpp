@@ -29,7 +29,36 @@ void ctn::Place::add_resource(ctn::Tile resource){
     available_resources.push_back(resource);
 }
 
+void ctn::Place::set_port(int port_id_){
+    port_id = port_id_;
+}
+
 #pragma endregion
+
+
+ctn::Port::Port(){}
+
+ctn::Port::Port(sf::Sprite sprite_, sf::Sprite resource_sprite_, sf::RenderWindow* window_, std::string req_mat_, int req_num_, sf::Vector2f mat_offset_, sf::Vector2f pl1, sf::Vector2f pl2){
+    window = window_;
+    sprite = sprite_;
+    resource_sprite = resource_sprite_;
+    std::complex<double> 
+        pl1_pos(pl1.x, pl1.y),
+        pl2_pos(pl2.x, pl2.y);
+    
+    double angle = std::arg(pl2_pos - pl1_pos);
+    sprite.rotate(angle * ctn::rad2deg);
+    resource_sprite.setPosition(sprite.getPosition() + mat_offset_);
+
+    required_mat = req_mat_;
+    required_num = req_num_;
+}
+
+void ctn::Port::draw(){
+    window->draw(sprite);
+    window->draw(resource_sprite);
+}
+
 
 
 #pragma region Board
@@ -45,11 +74,12 @@ void ctn::Board::load_assets(YAML::Node config_, sf::RenderWindow* window_){
     was::load_config(assets_cfg, config_["Game"]["assets"].as<std::string>());
     font.loadFromFile(assets_cfg["Test"]["font"].as<std::string>());
 
-    assets_cfg = assets_cfg["Board"];
     window = window_;
 
-    texture.loadFromFile(assets_cfg["texture"].as<std::string>());
+    texture.loadFromFile(assets_cfg["Board"]["texture"].as<std::string>());
+    env_texture.loadFromFile(assets_cfg["Environment"]["texture"].as<std::string>());
     
+    assets_cfg = assets_cfg["Board"];
     std::vector<std::string> building_types = ctn::house_types + ctn::path_types;
 
     std::map<std::string, sf::Sprite> tmp;
@@ -63,6 +93,10 @@ void ctn::Board::load_assets(YAML::Node config_, sf::RenderWindow* window_){
             sprites[p.first] = p.second;
         }
     }
+
+    std::vector<std::string> mats = ctn::materials;
+    mats.push_back(ctn::mANY);
+    port_mat_sprites = ctn::load_sprites(assets_cfg["Port"], texture, mats);
 
     house_id = new was::Text("", font, window, 14, sf::Color::Black, sf::Vector2f(0, 0));
 }
@@ -98,7 +132,45 @@ void ctn::Board::generate_board(){
     }
 }
 
+void ctn::Board::generate_ports(){
+    std::vector<std::vector<int>> port_configs;
+    sf::Sprite port = ctn::load_sprite(config["port_sprite"], env_texture, 1.5f);
+
+    int i = 0;
+    for(YAML::Node node : config["ports"]){
+        std::vector<int> cfg = node.as<std::vector<int>>();
+        if(cfg.size() != 4){
+            std::cout << "Bad port format" << std::endl;
+            i++;
+            continue;
+        }
+
+        int pl1_id = cfg[0], pl2_id = cfg[1], posx = cfg[2], posy = cfg[3];
+        sf::Vector2f 
+            pl1 = places[pl1_id].get_position(),
+            pl2 = places[pl2_id].get_position();
+
+        port.setPosition(posx, posy);
+        int port_id = ports.size();
+
+        std::string mat = config["port-mats"][i].as<std::string>();
+        int mat_num = config["port-mats-num"][i].as<int>();
+        sf::Vector2f offset(
+            config["port-mats-offset"][i][0].as<int>(),
+            config["port-mats-offset"][i][1].as<int>()
+        );
+
+        ports.push_back(Port(port, port_mat_sprites[mat], window, mat, mat_num, offset, pl1, pl2));
+        places[pl1_id].set_port(port_id);
+        places[pl2_id].set_port(port_id);
+        i++;
+    }
+}
+
 void ctn::Board::draw(){
+    for(ctn::Port& port : ports){
+        port.draw();
+    }
     for(ctn::Place& p : places){
         p.draw();
 
@@ -110,6 +182,7 @@ void ctn::Board::draw(){
     for(ctn::Path& path : path_rend){
         window->draw(path.sprite);
     }
+
 }
 
 void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){

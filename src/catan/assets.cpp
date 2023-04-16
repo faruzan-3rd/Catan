@@ -1,6 +1,17 @@
 #include "catan/assets.hpp"
 
 
+sf::Sprite ctn::load_sprite(const YAML::Node& config, sf::Texture& texture, float scale, int alpha){
+    int width = config[2].as<int>();
+    int height = config[3].as<int>();
+    sf::Sprite sprite(texture, sf::IntRect(config[0].as<int>(), config[1].as<int>(), width, height));
+    sprite.setScale(sf::Vector2f(scale, scale));
+    sprite.setColor(sf::Color(255, 255, 255, alpha));
+
+    return sprite;
+}
+
+
 std::map<ctn::Tile, sf::Sprite> ctn::load_sprites(const YAML::Node& config, sf::Texture& texture, float scale, int alpha){
     std::map<ctn::Tile, sf::Sprite> ret;
 

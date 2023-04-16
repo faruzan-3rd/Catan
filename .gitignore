@@ -14,3 +14,4 @@ app
 assets/art/tiles/
 compile_commands.json
 .cache/
+*.png~
