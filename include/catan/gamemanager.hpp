@@ -20,7 +20,7 @@ namespace ctn
         GameManager();
         GameManager(YAML::Node config_, sf::RenderWindow* window_);
 
-        void tick();
+        bool tick();
 
         void draw();
     };

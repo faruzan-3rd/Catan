@@ -7,8 +7,8 @@ ctn::Place::Place(){}
 ctn::Place::Place(sf::RenderWindow* window_, sf::Sprite sprite_, sf::Vector2f coords, std::vector<int> connected_to_, int id_){
     window = window_;
     sprite = sprite_;
-    coordinates_on_screen = coords;
-    sprite.setPosition(coordinates_on_screen);
+    pos = coords;
+    sprite.setPosition(pos);
     connected_to = connected_to_;
     id = id_;
 }
@@ -22,7 +22,7 @@ int ctn::Place::get_id() const{
 }
 
 sf::Vector2f ctn::Place::get_position() const{
-    return coordinates_on_screen;
+    return pos;
 }
 
 void ctn::Place::add_resource(ctn::Tile resource){
@@ -33,7 +33,32 @@ void ctn::Place::set_port(int port_id_){
     port_id = port_id_;
 }
 
+void ctn::Place::set_sprite(sf::Sprite sprite_){
+    sprite = sprite_;
+    sprite.setPosition(pos);
+}
+
+bool ctn::Place::is_clicked(const sf::Vector2f& mouse_pos){
+    return 
+    (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + sprite.getTextureRect().width) &&
+    (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + sprite.getTextureRect().height);
+}
+
 #pragma endregion
+
+
+void ctn::Path::set_sprite(sf::Sprite sprite_){
+    sprite_.setPosition(sprite.getPosition());
+    sprite = sprite_;
+}
+
+bool ctn::Path::is_clicked(const sf::Vector2f& mouse_pos){
+    sf::Vector2f pos = sprite.getPosition();
+
+    return (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + sprite.getTextureRect().width) &&
+    (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + sprite.getTextureRect().height);
+}
+
 
 
 ctn::Port::Port(){}
@@ -93,6 +118,7 @@ void ctn::Board::load_assets(YAML::Node config_, sf::RenderWindow* window_){
             sprites[p.first] = p.second;
         }
     }
+    sprites[ctn::NONE] = load_sprite(assets_cfg["Buildings"]["Sprites"]["none"], texture);
 
     std::vector<std::string> mats = ctn::materials;
     mats.push_back(ctn::mANY);
@@ -124,7 +150,7 @@ void ctn::Board::generate_board(){
     
         sf::Vector2f horizontal_offset(0, 0);
         for(int i = 0; i < num; i++){
-            ctn::Place place(window, sprites[ctn::RED + ctn::HOUSE], row_start + horizontal_offset, {}, places.size());
+            ctn::Place place(window, sprites[ctn::NONE], row_start + horizontal_offset, {}, places.size());
 
             places.push_back(place);
             horizontal_offset += interval[(i + start_with_short) % 2];
@@ -267,14 +293,14 @@ void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf
         if(done_path_id == -1){
             std::string path_type = get_path_type(dir);
             std::string path_final_name = ctn::BLUE + path_type;
-            sprites[path_final_name].setPosition(sf::Vector2f(std::min(
+            sprites[ctn::NONE].setPosition(sf::Vector2f(std::min(
                             pl1.get_position().x,
                             pl2.get_position().x),
                                         std::min(
                                             pl1.get_position().y, 
                                             pl2.get_position().y))
                             + path_position_offset[path_type]);
-            path_rend.push_back(Path(sprites[path_final_name], path_type));
+            path_rend.push_back(Path(sprites[ctn::NONE], path_type));
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), path_rend.size() - 1));
         }else{
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), done_path_id));
@@ -297,6 +323,21 @@ void ctn::Board::generate_graph(){
     for(Place& place : places){
         for(Place& target : places){
             make_path_if_exist(place, target, search_directions);
+        }
+    }
+}
+
+
+void ctn::Board::click(const sf::Vector2f& mouse_pos){
+    for(Place& place : places){
+        if(place.is_clicked(mouse_pos)){
+            place.set_sprite(sprites[ctn::RED + ctn::HOUSE]);
+        }
+    }
+
+    for(Path& path : path_rend){
+        if(path.is_clicked(mouse_pos)){
+            path.set_sprite(sprites[ctn::BLUE + path.path_typ]);
         }
     }
 }

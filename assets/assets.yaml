@@ -40,6 +40,7 @@ Board:
       horizontal: [32, 0, 32, 32]
       left_diag: [64, 0, 32, 32]
       right_diag: [96, 0, 32, 32]
+      none: [232, 232, 32, 32]
 
     Color-offsets:
       red: [0, 32]

@@ -31,7 +31,7 @@ namespace ctn{
     
     class Place{
         sf::RenderWindow* window;
-        sf::Vector2f coordinates_on_screen;
+        sf::Vector2f pos;
         std::vector<int> connected_to;
         std::vector<ctn::Tile> available_resources;
         int port_id;
@@ -48,6 +48,8 @@ namespace ctn{
         sf::Vector2f get_position() const;
         void add_resource(ctn::Tile resource);
         void set_port(int port_id_);
+        void set_sprite(sf::Sprite sprite_);
+        bool is_clicked(const sf::Vector2f& mouse_pos);
     };
 
 
@@ -59,6 +61,9 @@ namespace ctn{
         Path(sf::Sprite sp, std::string path_typ_){
             sprite = sp; path_typ = path_typ_;
         }
+
+        void set_sprite(sf::Sprite sprite_);
+        bool is_clicked(const sf::Vector2f& mouse_pos);
     };
 
 
@@ -97,6 +102,7 @@ namespace ctn{
         void generate_ports();
         void draw();
         void attribute_resources(const std::vector<ctn::BoardTile>& tiles);
+        void click(const sf::Vector2f& mouse_pos);
 
         private:
         void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<sf::Vector2f>& directions);

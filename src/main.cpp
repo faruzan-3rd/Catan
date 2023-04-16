@@ -27,17 +27,17 @@ int main(){
 
     while (window.isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if(event.type == sf::Event::Closed){
-                window.close();
-                return 0;
-            }
-        }
+        
         window.clear(backgroundColor);
-        manager.tick();
+        if(manager.tick()){
+            window.close();
+            break;
+        }
+        
         manager.draw();
         window.display();
     }  
+
+
+    return 0;
 }

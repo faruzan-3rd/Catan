@@ -41,6 +41,7 @@ namespace ctn{
     static const std::string HORIZONTAL{"horizontal"};
     static const std::string LEFT_DIAGONAL{"left_diag"};
     static const std::string RIGHT_DIAGONAL{"right_diag"};
+    static const std::string NONE{"none"};
 
     static const std::vector<std::string> path_types = {
         ctn::HORIZONTAL,
