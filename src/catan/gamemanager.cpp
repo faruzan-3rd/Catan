@@ -1,5 +1,9 @@
 #include "catan/gamemanager.hpp"
 
+ctn::Message message = {"init", -1, "", "", "", ""};
+std::vector<ctn::Player> players;
+std::optional<was::EventManager> eventmgr;
+
 
 ctn::GameManager::GameManager(){
 
@@ -18,34 +22,22 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_){
     board.attribute_resources(tile_renderer.get_tiles());
     board.generate_graph();
     board.generate_harbors();
+
+    players.push_back(Player(ctn::RED));
+    players.push_back(Player(ctn::BLUE));
+    players.push_back(Player(ctn::GREEN));
+
+    eventmgr.emplace(window);
 }
 
 
 bool ctn::GameManager::tick(){
-    sf::Event event;
-    while (window->pollEvent(event))
-    {
-        if(event.type == sf::Event::Closed){
-            window->close();
-            return 1;
-        }
-
-        static bool lock_click;
-        if (event.type == sf::Event::MouseButtonPressed){
-            if (event.mouseButton.button == sf::Mouse::Left && lock_click != true) {
-                board.click((sf::Vector2f)sf::Mouse::getPosition(*window));
-                lock_click = true; 
-            }   
-        }
-
-        if (event.type == sf::Event::MouseButtonReleased){
-            if (event.mouseButton.button == sf::Mouse::Left){
-                lock_click = false; 
-            }
-        }
-
-        
+    
+    if(!eventmgr->tick()){
+        return 1;
     }
+    turnmng.tick();
+    progmng.tick(&board);
 
 
     return 0;

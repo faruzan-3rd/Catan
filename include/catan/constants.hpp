@@ -28,6 +28,15 @@ namespace ctn{
         ctn::WOOD
     };
 
+    static const std::vector<std::string> materials = {
+        ctn::WOOL,
+        ctn::WOOD,
+        ctn::ORE,
+        ctn::BRICK,
+        ctn::WHEAT
+    };
+
+    // Buildings
     static const std::string 
         HOUSE{"house"},
         HORIZONTAL{"horizontal"},
@@ -60,12 +69,29 @@ namespace ctn{
     };
 
 
-    static const std::vector<std::string> materials = {
-        ctn::WOOL,
-        ctn::WOOD,
-        ctn::ORE,
-        ctn::BRICK,
-        ctn::WHEAT
+    // Cards
+    static const std::string 
+        KNIGHT{"knight"},
+        ROAD_BUILD{"road_building"},
+        YoPLENTY{"year_of_plenty"},
+        MONOPOLY{"monopoly"},
+        GREAT_HALL{"great_hall"};
+
+    static const std::string
+        LARGEST_ARMY{"largest_army"},
+        LONGEST_ROAD{"longest_road"};
+
+    static const std::vector<std::string> dev_cards = {
+        ctn::KNIGHT,
+        ctn::ROAD_BUILD,
+        ctn::YoPLENTY,
+        ctn::MONOPOLY,
+        ctn::GREAT_HALL
+    };
+
+    static const std::vector<std::string> special_cards = {
+        ctn::LARGEST_ARMY,
+        ctn::LONGEST_ROAD
     };
 }
 #endif

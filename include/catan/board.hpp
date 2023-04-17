@@ -154,7 +154,10 @@ namespace ctn{
         void generate_harbors();
         void draw();
         void attribute_resources(const std::vector<ctn::BoardTile>& tiles);
-        void click(const vec2f& mouse_pos);
+        int get_clicked_place(const vec2f& mouse_pos);
+        int get_clicked_path(const vec2f& mouse_pos);
+        void make_building_at(const int& id, const std::string& b_type);
+        void make_path_at(const int& id, const std::string& color);
 
         private:
         void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions);

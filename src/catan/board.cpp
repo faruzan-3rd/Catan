@@ -223,12 +223,11 @@ std::string ctn::Board::get_path_type(const vec2f& dir) const{
 void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions){
     std::map<std::string, vec2f> path_position_offset;
     for(std::string path_type : ctn::path_types){
-        path_position_offset[path_type] = vec2f(
-                config["path_position_offset"][path_type][0].as<int>(),
-                config["path_position_offset"][path_type][1].as<int>()
-                );
+        vec2f offset(
+            config["path_position_offset"][path_type][0].as<int>(),
+            config["path_position_offset"][path_type][1].as<int>());
+        path_position_offset[path_type] = offset;
     }
-
 
     vec2f dir = is_connected(pl1, pl2, directions);
     if(dir != vec2f(0, 0)){
@@ -262,9 +261,9 @@ void ctn::Board::generate_graph(){
     std::vector<vec2f> search_directions;
 
     for(YAML::Node nd : config["search_directions"]){
-        int x, y;
-        x = nd[0].as<int>();
-        y = nd[1].as<int>();
+        int
+            x = nd[0].as<int>(),
+            y = nd[1].as<int>();
         search_directions.push_back(vec2f(x, y));
         search_directions.push_back(vec2f(-x, -y));
     }
@@ -277,18 +276,30 @@ void ctn::Board::generate_graph(){
 }
 
 
-void ctn::Board::click(const vec2f& mouse_pos){
-    for(Place& place : places){
-        if(place.is_clicked(mouse_pos)){
-            place.set_sprite(sprites[ctn::RED + ctn::HOUSE]);
+int ctn::Board::get_clicked_place(const vec2f& mouse_pos){
+    for(int i = 0; i < places.size(); i++){
+        if(places[i].is_clicked(mouse_pos)){
+            return places[i].get_id();
         }
     }
+    return -1;
+}
 
-    for(Path& path : path_rend){
-        if(path.is_clicked(mouse_pos)){
-            path.set_sprite(sprites[ctn::BLUE + path.get_path_type()]);
+int ctn::Board::get_clicked_path(const vec2f& mouse_pos){
+    for(int i = 0; i < path_rend.size(); i++){
+        if(path_rend[i].is_clicked(mouse_pos)){
+            return i;
         }
     }
+    return -1;
+}
+
+void ctn::Board::make_building_at(const int& id, const std::string& b_type){
+    places[id].set_sprite(sprites[b_type]);
+}
+
+void ctn::Board::make_path_at(const int& id, const std::string& color){
+    path_rend[id].set_sprite(sprites[color + path_rend[id].get_path_type()]);
 }
 
 #pragma endregion

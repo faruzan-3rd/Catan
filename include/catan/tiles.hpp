@@ -27,7 +27,7 @@ namespace ctn {
             tile_type{ctn::NONE},
             window{nullptr},
             pos{vec2f(0, 0)},
-            token{-1}
+            token{0}
         {}
         BoardTile(
                 sf::RenderWindow* window_, 
@@ -37,7 +37,8 @@ namespace ctn {
             sprite{sprite_},
             tile_type{tile_type_},
             window{window_},
-            pos{pos_}
+            pos{pos_},
+            token{0}
         {
             sprite.setPosition(pos);
         }

@@ -77,7 +77,6 @@ void ctn::TileRenderer::generate_tiles(){
             placement_index++;
             tile_id = token_placement[placement_index];
         }
-
         tiles_rend[tile_id].set_token(token);
         placement_index++;
     }
@@ -101,7 +100,7 @@ void ctn::TileRenderer::draw(){
     }
     for(ctn::BoardTile& sp : tiles_rend){
         sp.draw();
-        if(sp.get_token() == 0) continue;
+        if(sp.get_token() <= 0) continue;
         
         token_rend.setPosition(sp.getPosition() + token_offset);
         window_ptr->draw(token_rend);

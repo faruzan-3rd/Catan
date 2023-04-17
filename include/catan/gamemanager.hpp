@@ -5,16 +5,23 @@
 #include "SFML/Graphics.hpp"
 #include "catan/board.hpp"
 #include "catan/tiles.hpp"
+#include "catan/message.hpp"
+#include "catan/player.hpp"
+#include "catan/turn.hpp"
+#include "catan/progress.hpp"
+#include "wastils/events.hpp"
+#include <optional>
 
 
-namespace ctn
-{
+namespace ctn{
     class GameManager{
         sf::RenderWindow* window;
 
         YAML::Node config;
         ctn::TileRenderer tile_renderer;
         ctn::Board board;
+        ctn::TurnManager turnmng;
+        ctn::ProgressManager progmng;
 
         public:
         GameManager();
@@ -24,7 +31,7 @@ namespace ctn
 
         void draw();
     };
-} 
+}
 
 
 #endif
