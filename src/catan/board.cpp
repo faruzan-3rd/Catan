@@ -19,7 +19,15 @@ bool ctn::Path::is_clicked(const vec2f& mouse_pos){
 }
 
 
-ctn::Harbor::Harbor(sf::Sprite sprite_, sf::Sprite resource_sprite_, sf::RenderWindow* window_, std::string req_mat_, int req_num_, vec2f mat_offset_, vec2f pl1, vec2f pl2){
+ctn::Harbor::Harbor(
+            sf::RenderWindow* window_, 
+            const sf::Sprite& sprite_,
+            const sf::Sprite& resource_sprite_,
+            const std::string& req_mat_, 
+            const int& req_num_, 
+            const vec2f& mat_offset_, 
+            const vec2f& pl1, 
+            const vec2f& pl2){
     window = window_;
     sprite = sprite_;
     resource_sprite = resource_sprite_;
@@ -129,7 +137,7 @@ void ctn::Board::generate_harbors(){
             config["harbor-mats-offset"][i][1].as<int>()
         );
 
-        harbors.push_back(Harbor(harbor, harbor_mat_sprites[mat], window, mat, mat_num, offset, pl1, pl2));
+        harbors.push_back(Harbor(window, harbor, harbor_mat_sprites[mat], mat, mat_num, offset, pl1, pl2));
         places[pl1_id].set_harbor(harbor_id);
         places[pl2_id].set_harbor(harbor_id);
         i++;

@@ -57,7 +57,7 @@ void ctn::TileRenderer::generate_tiles(){
             std::string tile_typ = tiles_shuffle[index];
 
             sf::Sprite tile_sp = tiles[tile_typ];
-            ctn::BoardTile tile(tile_sp, tile_typ, window_ptr, tile_position);
+            ctn::BoardTile tile(window_ptr, tile_sp, tile_typ, tile_position);
 
             tiles_rend[index] = tile;
             tile_position += v;

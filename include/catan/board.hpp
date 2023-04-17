@@ -32,7 +32,15 @@ namespace ctn{
             required_mat{ctn::NONE},
             required_num{-1}
         {}
-        Harbor(sf::Sprite sprite_, sf::Sprite resource_sprite_, sf::RenderWindow* window_, std::string req_mat_, int req_num_, vec2f mat_offset_, vec2f pl1, vec2f pl2);
+        Harbor(
+            sf::RenderWindow* window_, 
+            const sf::Sprite& sprite_,
+            const sf::Sprite& resource_sprite_,
+            const std::string& req_mat_, 
+            const int& req_num_, 
+            const vec2f& mat_offset_, 
+            const vec2f& pl1, 
+            const vec2f& pl2);
 
         void draw(){window->draw(sprite); window->draw(resource_sprite); }
         vec2f getPosition() const {return sprite.getPosition(); }
@@ -60,7 +68,12 @@ namespace ctn{
             sprite{sf::Sprite()},
             id{-1}
         {}
-        Place(sf::RenderWindow* window_, sf::Sprite sprite_, vec2f pos_, std::vector<int> connected_to_, int id_):
+        Place(
+                sf::RenderWindow* window_, 
+                const sf::Sprite& sprite_, 
+                const vec2f& pos_, 
+                const std::vector<int>& connected_to_, 
+                const int& id_):
             window{window_},
             sprite{sprite_},
             pos{pos_},
@@ -94,7 +107,7 @@ namespace ctn{
             sprite{sf::Sprite()},
             path_type{ctn::NONE}
         {}
-        Path(sf::RenderWindow* window_, sf::Sprite sp, std::string path_type_, vec2f pos_){
+        Path(sf::RenderWindow* window_, const sf::Sprite& sp, const std::string& path_type_, const vec2f& pos_){
             window = window_; sprite = sp; path_type = path_type_; pos = pos_; sprite.setPosition(pos);
         }
 

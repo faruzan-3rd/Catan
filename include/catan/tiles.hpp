@@ -29,7 +29,11 @@ namespace ctn {
             pos{vec2f(0, 0)},
             token{-1}
         {}
-        BoardTile(sf::Sprite sprite_, std::string tile_type_, sf::RenderWindow* window_, vec2f pos_):
+        BoardTile(
+                sf::RenderWindow* window_, 
+                const sf::Sprite& sprite_, 
+                const std::string& tile_type_, 
+                const vec2f& pos_):
             sprite{sprite_},
             tile_type{tile_type_},
             window{window_},
