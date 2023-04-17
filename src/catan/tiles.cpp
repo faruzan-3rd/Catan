@@ -1,54 +1,5 @@
 #include "catan/tiles.hpp"
 
-#pragma region BoardTile
-
-ctn::BoardTile::BoardTile(){
-    
-}
-
-ctn::BoardTile::BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, vec2f coordinates_){
-    sprite = sprite_;
-    tile_type = tile_type_;
-    window = window_;
-    coordinates = coordinates_;
-
-    sprite.setPosition(coordinates);
-}
-
-void ctn::BoardTile::draw(){
-    window->draw(sprite);
-}   
-
-vec2f ctn::BoardTile::get_position() const{
-    return coordinates;
-}
-
-ctn::Tile ctn::BoardTile::get_type() const{
-    return tile_type;
-}
-
-void ctn::BoardTile::set_token(int token_){
-    token = token_;
-}
-
-int ctn::BoardTile::get_token() const{
-    return token;
-}
-
-#pragma endregion
-
-
-#pragma region TileRenderer
-
-ctn::TileRenderer::TileRenderer(){
-
-}
-
-ctn::TileRenderer::~TileRenderer(){
-    if(tile_token_txt != nullptr){
-        delete tile_token_txt;
-    }
-}
 
 void ctn::TileRenderer::load_assets(const YAML::Node& config_, sf::RenderWindow* window_ptr_){
     window_ptr = window_ptr_;
@@ -58,7 +9,7 @@ void ctn::TileRenderer::load_assets(const YAML::Node& config_, sf::RenderWindow*
     std::cout << was::load_config(board_config, config_["Game"]["board"].as<std::string>()) << std::endl;
 
     std::cout << "Tile texutre: " << texture.loadFromFile(tiles_config["texture"].as<std::string>()) << std::endl;
-    tiles = load_sprites(tiles_config, texture, tiles_config["scale"].as<float>());
+    tiles = load_sprites(tiles_config, texture, tile_types, tiles_config["scale"].as<float>());
 
     tile_offset = vec2f(tiles_config["offset"][0].as<int>(), tiles_config["offset"][1].as<int>());
     u = vec2f(tiles_config["u"][0].as<int>(), tiles_config["u"][1].as<int>());
@@ -82,9 +33,9 @@ void ctn::TileRenderer::generate_tiles(){
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
 
-    std::vector<ctn::Tile> tiles_shuffle;
-    for(ctn::Tile tile_type : All_types){
-        int num = board_config["tiles_num"][enum2str.at(tile_type)].as<int>();
+    std::vector<std::string> tiles_shuffle;
+    for(std::string tile_type : tile_types){
+        int num = board_config["tiles_num"][tile_type].as<int>();
         for(int _ = 0; _ < num; _++) tiles_shuffle.push_back(tile_type);
     }
     std::shuffle(tiles_shuffle.begin(), tiles_shuffle.end(), engine);
@@ -103,7 +54,7 @@ void ctn::TileRenderer::generate_tiles(){
 
         for(int row = 0; row < shape; row++){
             int index = (shape == 5 ? middle_row_index[row] : (start_index[col_tot - remain] + 5 * row));
-            ctn::Tile tile_typ = tiles_shuffle[index];
+            std::string tile_typ = tiles_shuffle[index];
 
             sf::Sprite tile_sp = tiles[tile_typ];
             ctn::BoardTile tile(tile_sp, tile_typ, window_ptr, tile_position);
@@ -122,7 +73,7 @@ void ctn::TileRenderer::generate_tiles(){
     int placement_index = 0;
     for(int token : tokens){
         int tile_id = token_placement[placement_index];
-        while(placement_index < tiles_rend.size() && tiles_rend[tile_id].get_type() == ctn::Tile::DESERT){
+        while(placement_index < tiles_rend.size() && tiles_rend[tile_id].get_tile_type() == ctn::DESERT){
             placement_index++;
             tile_id = token_placement[placement_index];
         }
@@ -152,10 +103,10 @@ void ctn::TileRenderer::draw(){
         sp.draw();
         if(sp.get_token() == 0) continue;
         
-        token_rend.setPosition(sp.get_position() + token_offset);
+        token_rend.setPosition(sp.getPosition() + token_offset);
         window_ptr->draw(token_rend);
 
-        tile_token_txt->set_position(sp.get_position() + token_txt_offset);
+        tile_token_txt->set_position(sp.getPosition() + token_txt_offset);
         tile_token_txt->set_text(std::to_string(sp.get_token()));
         tile_token_txt->draw();
     }

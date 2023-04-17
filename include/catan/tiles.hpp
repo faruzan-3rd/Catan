@@ -14,27 +14,36 @@ typedef sf::Vector2f vec2f;
 
 
 namespace ctn {
-
     class BoardTile{
         sf::Sprite sprite;
-        ctn::Tile tile_type;
+        std::string tile_type;
         sf::RenderWindow* window;
-        vec2f coordinates;
+        vec2f pos;
         int token;
 
         public:
-        BoardTile();
-        BoardTile(sf::Sprite sprite_, ctn::Tile tile_type_, sf::RenderWindow* window_, vec2f coordinates_);
+        BoardTile():
+            sprite{sf::Sprite()},
+            tile_type{ctn::NONE},
+            window{nullptr},
+            pos{vec2f(0, 0)},
+            token{-1}
+        {}
+        BoardTile(sf::Sprite sprite_, std::string tile_type_, sf::RenderWindow* window_, vec2f pos_):
+            sprite{sprite_},
+            tile_type{tile_type_},
+            window{window_},
+            pos{pos_}
+        {
+            sprite.setPosition(pos);
+        }
 
-        void draw();
+        void draw(){window->draw(sprite); }
+        vec2f getPosition() const {return sprite.getPosition(); }
+        int get_token() const {return token; }
+        void set_token(const int& token_) {token = token_; }
+        std::string get_tile_type() const {return tile_type; }
 
-        vec2f get_position() const;
-
-        ctn::Tile get_type() const;
-
-        int get_token() const;
-
-        void set_token(int token_);
     };
 
 
@@ -43,7 +52,7 @@ namespace ctn {
         sf::RenderWindow* window_ptr;
         
         sf::Texture texture, env_texture;
-        std::map<ctn::Tile, sf::Sprite> tiles;
+        std::map<std::string, sf::Sprite> tiles;
         std::vector<sf::Sprite> sea_tiles;
         int sea_width, sea_height;
 
@@ -61,8 +70,8 @@ namespace ctn {
 
 
         public:
-        TileRenderer();
-        ~TileRenderer();
+        TileRenderer(){}
+        ~TileRenderer() {if(tile_token_txt != nullptr) delete tile_token_txt; }
         
         void load_assets(const YAML::Node& config_, sf::RenderWindow* window_ptr_);
 

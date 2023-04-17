@@ -10,11 +10,11 @@ Tiles:
 
   Sprites:
     desert: [0, 0, 64, 51]
-    plain: [64, 0, 64, 51]
+    wool: [64, 0, 64, 51]
     wheat: [128, 0, 64, 51]
-    mountain: [192, 0, 64, 51]
+    ore: [192, 0, 64, 51]
     brick: [0, 51, 64, 51]
-    forest: [64, 51, 64, 51]
+    wood: [64, 51, 64, 51]
 
 
 Environment:
@@ -48,7 +48,7 @@ Board:
       yellow: [0, 96]
       green: [0, 128]
   
-  Port:
+  Harbor:
     Sprites:
       wood:  [128, 0, 32, 32]
       ore: [192, 0, 32, 32]

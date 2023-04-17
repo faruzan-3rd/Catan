@@ -17,7 +17,7 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_){
     board.generate_board();
     board.attribute_resources(tile_renderer.get_tiles());
     board.generate_graph();
-    board.generate_ports();
+    board.generate_harbors();
 }
 
 

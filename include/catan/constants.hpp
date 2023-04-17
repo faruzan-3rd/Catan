@@ -10,38 +10,30 @@ namespace ctn{
 
     const double rad2deg{180.0 / M_PI};
 
-    enum class Tile{
-        DESERT,
-        PLAIN,
-        WHEAT,
-        MOUNTAIN,
-        BRICK,
-        FOREST
+    static const std::string
+        DESERT{"desert"},
+        WOOL{"wool"},
+        ORE{"ore"},
+        BRICK{"brick"},
+        WHEAT{"wheat"},
+        WOOD{"wood"},
+        ANY{"any"};
+
+    static const std::vector<std::string> tile_types = {
+        ctn::DESERT,
+        ctn::WOOL,
+        ctn::ORE,
+        ctn::BRICK,
+        ctn::WHEAT,
+        ctn::WOOD
     };
 
-    static const ctn::Tile All_types[] = {
-        ctn::Tile::DESERT,
-        ctn::Tile::PLAIN,
-        ctn::Tile::WHEAT,
-        ctn::Tile::MOUNTAIN,
-        ctn::Tile::BRICK,
-        ctn::Tile::FOREST
-    };
-
-    static const std::map<ctn::Tile, std::string> enum2str = {
-        {ctn::Tile::DESERT, "desert"},
-        {ctn::Tile::PLAIN, "plain"},
-        {ctn::Tile::WHEAT, "wheat"},
-        {ctn::Tile::MOUNTAIN, "mountain"},
-        {ctn::Tile::BRICK, "brick"},
-        {ctn::Tile::FOREST, "forest"}
-    };
-
-    static const std::string HOUSE{"house"};
-    static const std::string HORIZONTAL{"horizontal"};
-    static const std::string LEFT_DIAGONAL{"left_diag"};
-    static const std::string RIGHT_DIAGONAL{"right_diag"};
-    static const std::string NONE{"none"};
+    static const std::string 
+        HOUSE{"house"},
+        HORIZONTAL{"horizontal"},
+        LEFT_DIAGONAL{"left_diag"},
+        RIGHT_DIAGONAL{"right_diag"},
+        NONE{"none"};
 
     static const std::vector<std::string> path_types = {
         ctn::HORIZONTAL,
@@ -53,11 +45,12 @@ namespace ctn{
         ctn::HOUSE
     };
     
-    
-    static const std::string RED{"red"};
-    static const std::string BLUE{"blue"};
-    static const std::string YELLOW{"yellow"};
-    static const std::string GREEN{"green"};
+    // Colors
+    static const std::string 
+        RED{"red"},
+        BLUE{"blue"},
+        YELLOW{"yellow"},
+        GREEN{"green"};
 
     static const std::vector<std::string> colors = {
         ctn::RED,
@@ -66,20 +59,13 @@ namespace ctn{
         ctn::GREEN
     };
 
-    static const std::string mWOOL{"wool"};
-    static const std::string mORE{"ore"};
-    static const std::string mBRICK{"brick"};
-    static const std::string mWHEAT{"wheat"};
-    static const std::string mWOOD{"wood"};
-    static const std::string mANY{"any"};
 
     static const std::vector<std::string> materials = {
-        ctn::mWOOL,
-        ctn::mWOOD,
-        ctn::mORE,
-        ctn::mBRICK,
-        ctn::mWHEAT
+        ctn::WOOL,
+        ctn::WOOD,
+        ctn::ORE,
+        ctn::BRICK,
+        ctn::WHEAT
     };
-
 }
 #endif

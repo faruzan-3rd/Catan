@@ -40,11 +40,11 @@ path_position_offset:
 
 tiles_num:
     desert: 1
-    plain: 4
+    wool: 4
     wheat: 4
-    mountain: 3
+    ore: 3
     brick: 3
-    forest: 4
+    wood: 4
 
 token_sprite: "assets/art/token.png"
 tokens: [5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11]
@@ -52,8 +52,8 @@ token_placement: [3, 8, 13, 16, 18, 17, 15, 10, 5, 2, 0, 1, 6, 11, 14, 12, 7, 4,
 token_offset: [45, 35]
 token_txt_offset: [55, 40]
 
-port_sprite: [64, 0, 32, 32]
-ports:
+harbor_sprite: [64, 0, 32, 32]
+harbors:
     - [0, 1, 640, 695]
     - [5, 10, 438, 620]
     - [23, 29, 342, 475]
@@ -64,7 +64,7 @@ ports:
     - [24, 18, 912, 432]
     - [7, 2, 812, 574]
 
-port-mats-offset:
+harbor-mats-offset:
     - [-40, -2]
     - [-40, -25]
     - [-40, -25]
@@ -75,7 +75,7 @@ port-mats-offset:
     - [-16, 12]
     - [-17, 12]
 
-port-mats:
+harbor-mats:
     - "wheat"
     - "any"
     - "wool"
@@ -86,7 +86,7 @@ port-mats:
     - "wood"
     - "any"
 
-port-mats-num:
+harbor-mats-num:
     - 2
     - 3
     - 2
