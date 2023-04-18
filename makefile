@@ -5,9 +5,9 @@ CC = g++
 CFLAGS = -std=c++17
 TARGET = app
 
-SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/tiles.cpp src/catan/board.cpp\
+SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/board.cpp\
 		src/catan/gamemanager.cpp src/wastils/UI/BaseUIElement.cpp src/wastils/UI/text.cpp\
-		src/wastils/geometry.cpp src/catan/turn.cpp src/catan/progress.cpp src/wastils/events.cpp
+		src/wastils/geometry.cpp src/wastils/events.cpp src/catan/graphics.cpp
 
 
 OBJS = $(SRCS:.cpp=.o)

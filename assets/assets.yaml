@@ -23,9 +23,7 @@ Environment:
     Sea:
       size: [18, 13]
       scale: 2
-
-      Sprites:
-        - [0, 0, 64, 64]
+      sprite: [0, 0, 64, 64]
 
 
 Board:
@@ -43,12 +41,15 @@ Board:
       none: [232, 232, 32, 32]
 
     Color-offsets:
+      gray: [0, 0]
       red: [0, 32]
       blue: [0, 64]
       yellow: [0, 96]
       green: [0, 128]
+      invisible: [0, 224]
   
   Harbor:
+    sprite: [64, 0, 32, 32]
     Sprites:
       wood:  [128, 0, 32, 32]
       ore: [192, 0, 32, 32]
@@ -56,3 +57,6 @@ Board:
       wheat: [160, 0, 32, 32]
       wool: [160, 32, 32, 32]
       any: [128, 32, 32, 32]
+    
+  Other:
+    token: [192, 32, 32, 32]

@@ -59,13 +59,17 @@ namespace ctn{
         RED{"red"},
         BLUE{"blue"},
         YELLOW{"yellow"},
-        GREEN{"green"};
+        GREEN{"green"},
+        GRAY{"gray"},
+        INVISIBLE{"invisible"};
 
     static const std::vector<std::string> colors = {
         ctn::RED,
         ctn::BLUE,
         ctn::YELLOW,
-        ctn::GREEN
+        ctn::GREEN,
+        ctn::GRAY,
+        ctn::INVISIBLE
     };
 
 
@@ -93,5 +97,11 @@ namespace ctn{
         ctn::LARGEST_ARMY,
         ctn::LONGEST_ROAD
     };
+
+    // Other
+    static const std::string
+        HARBOR{"harbor"},
+        TOKEN{"token"},
+        SEA{"sea"};
 }
 #endif

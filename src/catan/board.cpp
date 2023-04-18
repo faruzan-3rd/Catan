@@ -1,43 +1,30 @@
 #include "catan/board.hpp"
 
 
-#pragma region Place
-
 bool ctn::Place::is_clicked(const vec2f& mouse_pos){
-    return 
-    (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + sprite.getTextureRect().width) &&
-    (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + sprite.getTextureRect().height);
+    return false;
 }
 
-#pragma endregion
 
 bool ctn::Path::is_clicked(const vec2f& mouse_pos){
-    vec2f pos = sprite.getPosition();
-
-    return (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + sprite.getTextureRect().width) &&
-    (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + sprite.getTextureRect().height);
+    return false;
 }
 
 
 ctn::Harbor::Harbor(
-            sf::RenderWindow* window_, 
-            const sf::Sprite& sprite_,
-            const sf::Sprite& resource_sprite_,
             const std::string& req_mat_, 
             const int& req_num_, 
             const vec2f& mat_offset_, 
             const vec2f& pl1, 
-            const vec2f& pl2){
-    window = window_;
-    sprite = sprite_;
-    resource_sprite = resource_sprite_;
+            const vec2f& pl2,
+            const vec2f& position_){
     std::complex<double> 
         pl1_pos(pl1.x, pl1.y),
         pl2_pos(pl2.x, pl2.y);
     
-    double angle = std::arg(pl2_pos - pl1_pos);
-    sprite.rotate(angle * ctn::rad2deg);
-    resource_sprite.setPosition(sprite.getPosition() + mat_offset_);
+    rotation = std::arg(pl2_pos - pl1_pos) * ctn::rad2deg;
+    position = position_;
+    mat_position = position + mat_offset_;
 
     required_mat = req_mat_;
     required_num = req_num_;
@@ -45,45 +32,19 @@ ctn::Harbor::Harbor(
 
 #pragma region Board
 
-void ctn::Board::load_assets(const YAML::Node& config_, sf::RenderWindow* window_){
-    was::load_config(config, config_["Game"]["board"].as<std::string>());
-    was::load_config(assets_cfg, config_["Game"]["assets"].as<std::string>());
-    font.loadFromFile(assets_cfg["Test"]["font"].as<std::string>());
 
-    window = window_;
-
-    texture.loadFromFile(assets_cfg["Board"]["texture"].as<std::string>());
-    env_texture.loadFromFile(assets_cfg["Environment"]["texture"].as<std::string>());
-    
-    assets_cfg = assets_cfg["Board"];
-    std::vector<std::string> building_types = ctn::house_types + ctn::path_types;
-
-    std::map<std::string, sf::Sprite> tmp;
-    for(std::string color : colors){
-        int offset_x, offset_y;
-        offset_x = assets_cfg["Buildings"]["Color-offsets"][color][0].as<int>();
-        offset_y = assets_cfg["Buildings"]["Color-offsets"][color][1].as<int>();
-
-        tmp = ctn::load_sprites(assets_cfg["Buildings"], texture, building_types, 1.0f, 255, offset_x, offset_y, color);
-        for(auto p : tmp){
-            sprites[p.first] = p.second;
-        }
+void ctn::Board::generate_board(const YAML::Node& config_){
+    if(was::load_config(config, config_["Game"]["board"].as<std::string>())){
+        std::cout << "Error while loading board config (board)." << std::endl;
+        return;
     }
-    sprites[ctn::NONE] = load_sprite(assets_cfg["Buildings"]["Sprites"]["none"], texture);
 
-    std::vector<std::string> mats = ctn::materials;
-    mats.push_back(ctn::ANY);  // Harbor exchange
-    harbor_mat_sprites = ctn::load_sprites(assets_cfg["Harbor"], texture, mats);
-
-    house_id = new was::Text("", font, window, 14, sf::Color::Black, vec2f(0, 0));
-}
-
-void ctn::Board::generate_board(){
-    vec2f u(config["u"][0].as<int>(), config["u"][1].as<int>());
-    vec2f v(config["v"][0].as<int>(), config["v"][1].as<int>());
-    vec2f place_offset(config["offset"][0].as<int>(), config["offset"][1].as<int>());
-    vec2f short_path(-config["short"].as<int>(), 0);
-    vec2f long_path(-config["long"].as<int>(), 0);
+    vec2f 
+        u(config["u"][0].as<int>(), config["u"][1].as<int>()),
+        v(config["v"][0].as<int>(), config["v"][1].as<int>()),
+        place_offset(config["offset"][0].as<int>(), config["offset"][1].as<int>()),
+        short_path(-config["short"].as<int>(), 0),
+        long_path(-config["long"].as<int>(), 0);
 
     for(auto shape_node : config["shape"]){
         std::vector<int> shape = shape_node.as<std::vector<int>>();
@@ -101,7 +62,7 @@ void ctn::Board::generate_board(){
     
         vec2f horizontal_offset(0, 0);
         for(int i = 0; i < num; i++){
-            ctn::Place place(window, sprites[ctn::NONE], row_start + horizontal_offset, {}, places.size());
+            ctn::Place place(row_start + horizontal_offset, {}, places.size(), ctn::INVISIBLE);
 
             places.push_back(place);
             horizontal_offset += interval[(i + start_with_short) % 2];
@@ -111,7 +72,6 @@ void ctn::Board::generate_board(){
 
 void ctn::Board::generate_harbors(){
     std::vector<std::vector<int>> harbor_configs;
-    sf::Sprite harbor = ctn::load_sprite(config["harbor_sprite"], env_texture, 1.5f);
 
     int i = 0;
     for(YAML::Node node : config["harbors"]){
@@ -124,10 +84,9 @@ void ctn::Board::generate_harbors(){
 
         int pl1_id = cfg[0], pl2_id = cfg[1], posx = cfg[2], posy = cfg[3];
         vec2f 
-            pl1 = places[pl1_id].getPosition(),
-            pl2 = places[pl2_id].getPosition();
+            pl1 = places[pl1_id].get_position(),
+            pl2 = places[pl2_id].get_position();
 
-        harbor.setPosition(posx, posy);
         int harbor_id = harbors.size();
 
         std::string mat = config["harbor-mats"][i].as<std::string>();
@@ -137,32 +96,15 @@ void ctn::Board::generate_harbors(){
             config["harbor-mats-offset"][i][1].as<int>()
         );
 
-        harbors.push_back(Harbor(window, harbor, harbor_mat_sprites[mat], mat, mat_num, offset, pl1, pl2));
+        harbors.push_back(Harbor(mat, mat_num, offset, pl1, pl2, vec2f(posx, posy)));
         places[pl1_id].set_harbor(harbor_id);
         places[pl2_id].set_harbor(harbor_id);
         i++;
     }
 }
 
-void ctn::Board::draw(){
-    for(ctn::Harbor& harbor : harbors){
-        harbor.draw();
-    }
-    for(ctn::Place& p : places){
-        p.draw();
 
-        house_id->set_text(std::to_string(p.get_id()));
-        house_id->set_position(p.getPosition());
-        house_id->draw();
-    }
-
-    for(ctn::Path& path : path_rend){
-        path.draw();
-    }
-
-}
-
-void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
+void ctn::Board::attribute_resources(){
     typedef std::pair<vec2f, std::string> Resource;
 
     int max_resources = config["max"].as<int>();
@@ -171,16 +113,16 @@ void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
     
     std::vector<Resource> resources;
     for(const ctn::BoardTile& bt : tiles){
-        resources.push_back(std::make_pair(bt.getPosition() + tiles_offset, bt.get_tile_type()));
+        resources.push_back(std::make_pair(bt.get_position() + tiles_offset, bt.get_tile_type()));
     }
 
     for(Place& place : places){
         std::sort(resources.begin(), resources.end(), [&place](const Resource& lhs, const Resource& rhs){
-            return was::distance_sq(place.getPosition(), lhs.first) < was::distance_sq(place.getPosition(), rhs.first);
+            return was::distance_sq(place.get_position(), lhs.first) < was::distance_sq(place.get_position(), rhs.first);
         });
 
         for(int i = 0; i < max_resources; i++){
-            if(was::distance_sq(place.getPosition(), resources[i].first) > search_distance * search_distance) continue;
+            if(was::distance_sq(place.get_position(), resources[i].first) > search_distance * search_distance) continue;
             place.add_resource(resources[i].second);
         }
     }
@@ -189,7 +131,7 @@ void ctn::Board::attribute_resources(const std::vector<ctn::BoardTile>& tiles){
 
 vec2f ctn::Board::is_connected(Place& pl1, Place& pl2, const std::vector<vec2f>& directions, int max_radius){
     for(const vec2f& dir : directions){
-        if(was::distance_sq(pl1.getPosition() + dir, pl2.getPosition()) <= max_radius * max_radius){
+        if(was::distance_sq(pl1.get_position() + dir, pl2.get_position()) <= max_radius * max_radius){
             return dir;
         }      
     }
@@ -244,12 +186,12 @@ void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<ve
             std::string path_type = get_path_type(dir);
             std::string path_final_name = ctn::BLUE + path_type;
             float 
-                minx = std::min(pl1.getPosition().x, pl2.getPosition().x),
-                miny = std::min(pl1.getPosition().y, pl2.getPosition().y);
+                minx = std::min(pl1.get_position().x, pl2.get_position().x),
+                miny = std::min(pl1.get_position().y, pl2.get_position().y);
 
             vec2f pos = vec2f(minx, miny) + path_position_offset[path_type];
-            path_rend.push_back(Path(window, sprites[ctn::NONE], path_type, pos));
-            graph[pl1.get_id()].push_back(PathData(pl2.get_id(), path_rend.size() - 1));
+            paths.push_back(Path(path_type, pos, ctn::INVISIBLE));
+            graph[pl1.get_id()].push_back(PathData(pl2.get_id(), paths.size() - 1));
         }else{
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), done_path_id));
         }
@@ -275,6 +217,83 @@ void ctn::Board::generate_graph(){
     }
 }
 
+void ctn::Board::generate_tiles(const YAML::Node& config_){
+    YAML::Node board_cfg, assets_cfg;
+    if(was::load_config(board_cfg, config_["Game"]["board"].as<str>())){
+        std::cout << "Error while loading board config (tiles)." << std::endl;
+        return;
+    }
+    if(was::load_config(assets_cfg, config_["Game"]["assets"].as<str>())){
+        std::cout << "Error while generating assets config (tiles)." << std::endl;
+        return;
+    }
+    vec2f 
+        u(
+            assets_cfg["Tiles"]["u"][0].as<int>(), 
+            assets_cfg["Tiles"]["u"][1].as<int>()
+        ),
+        v(
+            assets_cfg["Tiles"]["v"][0].as<int>(), 
+            assets_cfg["Tiles"]["v"][1].as<int>()
+        );
+
+    std::random_device seed_gen;
+    std::mt19937 engine(seed_gen());
+
+    std::vector<std::string> tiles_shuffle;
+    for(std::string tile_type : tile_types){
+        int num = board_cfg["tiles_num"][tile_type].as<int>();
+        for(int _ = 0; _ < num; _++) tiles_shuffle.push_back(tile_type);
+    }
+    std::shuffle(tiles_shuffle.begin(), tiles_shuffle.end(), engine);
+
+    vec2f tile_offset(
+        assets_cfg["Tiles"]["offset"][0].as<int>(),
+        assets_cfg["Tiles"]["offset"][1].as<int>()
+    );
+    vec2f tile_position;
+
+    int tile_shape[] = {3, 4, 5, 4, 3};
+    int start_index[] = {5, 2, 0, 1, 3};
+    int middle_row_index[] = {0, 4, 9, 14, 18};
+    const int col_tot = 5;
+    tiles = std::vector<ctn::BoardTile>(19);
+
+    int remain = col_tot;
+    for(int shape : tile_shape){
+        tile_position = tile_offset - u * (remain - 3) - v * std::min(2, col_tot - remain);
+
+        for(int row = 0; row < shape; row++){
+            int index = (shape == 5 ? middle_row_index[row] : (start_index[col_tot - remain] + 5 * row));
+            std::string tile_typ = tiles_shuffle[index];
+
+            ctn::BoardTile tile(tile_typ, tile_position);
+
+            tiles[index] = tile;
+            tile_position += v;
+        }
+
+        remain--;
+    }
+
+    std::reverse(tiles.begin(), tiles.end());
+
+
+    int placement_index = 0;
+    std::vector<int> 
+        tokens = board_cfg["tokens"].as<std::vector<int>>(),
+        token_placement = board_cfg["token_placement"].as<std::vector<int>>();
+
+    for(int token : tokens){
+        int tile_id = token_placement[placement_index];
+        while(placement_index < tiles.size() && tiles[tile_id].get_tile_type() == ctn::DESERT){
+            placement_index++;
+            tile_id = token_placement[placement_index];
+        }
+        tiles[tile_id].set_token(token);
+        placement_index++;
+    }
+}
 
 int ctn::Board::get_clicked_place(const vec2f& mouse_pos){
     for(int i = 0; i < places.size(); i++){
@@ -286,20 +305,12 @@ int ctn::Board::get_clicked_place(const vec2f& mouse_pos){
 }
 
 int ctn::Board::get_clicked_path(const vec2f& mouse_pos){
-    for(int i = 0; i < path_rend.size(); i++){
-        if(path_rend[i].is_clicked(mouse_pos)){
+    for(int i = 0; i < paths.size(); i++){
+        if(paths[i].is_clicked(mouse_pos)){
             return i;
         }
     }
     return -1;
-}
-
-void ctn::Board::make_building_at(const int& id, const std::string& b_type){
-    places[id].set_sprite(sprites[b_type]);
-}
-
-void ctn::Board::make_path_at(const int& id, const std::string& color){
-    path_rend[id].set_sprite(sprites[color + path_rend[id].get_path_type()]);
 }
 
 #pragma endregion
