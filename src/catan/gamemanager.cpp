@@ -1,15 +1,9 @@
 #include "catan/gamemanager.hpp"
 
 std::vector<ctn::Player> players;
-std::optional<was::EventManager> eventmgr;
 
-
-ctn::GameManager::GameManager(){
-
-}
-
-
-ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_){
+ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): GameManager()
+{
     config = config_;
     window = window_;
 
@@ -25,14 +19,46 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_){
     players.push_back(Player(ctn::BLUE));
     players.push_back(Player(ctn::GREEN));
 
-    eventmgr.emplace(window);
+    mouse = was::MouseManager(window);
+
+    progressmng.board = &board;
+    progressmng.build_game_logic();
+    eventmanager = EventManager(&mouse, &progressmng, &board);
+
+    attribute_functions_to_ui();
+
+    progressmng.set_state("start");
+    progressmng.execute_transition("start");
 }
 
+void ctn::GameManager::attribute_functions_to_ui(){
+    graphics.set_function("validate", std::bind(&EventManager::build_validate, &eventmanager));
+}
 
 bool ctn::GameManager::tick(){
-    if(!eventmgr->tick()){
-        return 1;
+    /*
+    1. INPUT CHECK
+    */
+    mouse.tick();
+    sf::Event sf_event;
+    while (window->pollEvent(sf_event))
+    {
+        if(sf_event.type == sf::Event::Closed){
+            window->close();
+            std::cout << "Quit" << std::endl;
+            return false;
+        }
+
+        mouse.reg_event(sf_event);
     }
+
+    /*
+    2. UI/AI INPUT
+    */
+    graphics.update(mouse);
+    eventmanager.update();
+    
+    draw();
 
     return 0;
 }

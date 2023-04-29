@@ -1,9 +1,14 @@
-#include "wastils/events.hpp"
+#include "wastils/input.hpp"
 
 
-void was::MouseManager::tick(const sf::Event& event){
+void was::MouseManager::tick(){
     button_down.clear();
+    for(sf::Mouse::Button btn : buttons){
+        button_down[btn] = false;
+    }
+}
 
+void was::MouseManager::reg_event(const sf::Event& event){
     for(sf::Mouse::Button btn : buttons){
         if (event.type == sf::Event::MouseButtonPressed){
             if (event.mouseButton.button == btn && lock_click[btn] != true) {
@@ -20,27 +25,10 @@ void was::MouseManager::tick(const sf::Event& event){
     }
 }
 
-vec2f was::MouseManager::get_mouse_pos_relative(){
+vec2f was::MouseManager::get_mouse_pos_relative() const{
     return (vec2f)sf::Mouse::getPosition(*window);
 }
 
 void was::KeyboardManager::tick(const sf::Event& event){
-
-}
-
-
-bool was::EventManager::tick(){
-    sf::Event event;
-    while (window->pollEvent(event))
-    {
-        if(event.type == sf::Event::Closed){
-            window->close();
-            return false;
-        }
-
-        mousemanager.tick(event);
-        keyboardmanager.tick(event);
-    }
-
-    return true;
+    
 }

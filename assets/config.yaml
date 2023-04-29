@@ -17,3 +17,4 @@ Game:
   framerate: 120
   assets: "assets/assets.yaml"
   board: "assets/board.yaml"
+  ui: "assets/ui.yaml"

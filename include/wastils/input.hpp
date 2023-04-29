@@ -27,9 +27,15 @@ namespace was{
             window{window_}
         {};
 
-        void tick(const sf::Event& event);
-        bool button_pressed_down(const sf::Mouse::Button& btn){ return button_down[btn]; }
-        vec2f get_mouse_pos_relative();
+        MouseManager& operator=(const MouseManager& other){
+            window = other.window;
+            return *this;
+        }
+
+        void tick();
+        void reg_event(const sf::Event& event);
+        bool button_pressed_down(const sf::Mouse::Button& btn) const{ return button_down.at(btn); }
+        vec2f get_mouse_pos_relative() const;
 
     };
 
@@ -37,29 +43,6 @@ namespace was{
 
         public:
         void tick(const sf::Event& event);
-    };
-
-
-    class EventManager{
-        sf::RenderWindow* window;
-
-        public:
-        MouseManager mousemanager;
-        KeyboardManager keyboardmanager;
-
-        EventManager():
-            window{nullptr},
-            mousemanager{},
-            keyboardmanager{}
-        {}
-
-        EventManager(sf::RenderWindow* window_):
-            window{window_},
-            mousemanager{window_},
-            keyboardmanager{}
-        {}
-
-        bool tick();
     };
 }
 

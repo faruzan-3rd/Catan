@@ -5,16 +5,19 @@
 #include "SFML/Graphics.hpp"
 #include "catan/board.hpp"
 #include "catan/player.hpp"
-#include "wastils/events.hpp"
+#include "catan/progress.hpp"
+#include "catan/events.hpp"
+#include "wastils/input.hpp"
+#include "wastils/UI.hpp"
 #include <optional>
 #include <map>
 #include <vector>
 #include <memory>
 
-typedef std::string str;
-typedef sf::Sprite sprt;
-typedef sf::Vector2f vec2f;
-typedef sf::Vector2i vec2i;
+using str = std::string;
+using sprt = sf::Sprite;
+using vec2f = sf::Vector2f;
+using vec2i = sf::Vector2i;
 
 
 namespace ctn{
@@ -49,6 +52,7 @@ namespace ctn{
         sf::Font ft_mario;
 
         // UI
+        was::UIScheme ui;
         std::unique_ptr<was::Text>
             txt_token;
 
@@ -70,6 +74,12 @@ namespace ctn{
             const std::vector<ctn::Place>& places,
             const std::vector<ctn::Harbor>& harbors,
             const std::vector<ctn::Path>& paths);
+
+        void update(const was::MouseManager& mouse);
+
+        void set_function(const str& ui_name, std::function<void()> func){
+            ui.get_ptr_by_name(ui_name)->set_function(func);
+        }
     };
 
     class Audio{
@@ -84,16 +94,30 @@ namespace ctn{
         sf::RenderWindow* window;
 
         YAML::Node config;
+        was::MouseManager mouse;
         ctn::Board board;
         ctn::Graphics graphics;
+        ctn::ProgressManager progressmng;
+        ctn::EventManager eventmanager;
 
         public:
-        GameManager();
+        GameManager():
+            window{nullptr},
+            config{},
+            mouse{},
+            board{},
+            graphics{},
+            progressmng{},
+            eventmanager{}
+        {}
         GameManager(YAML::Node config_, sf::RenderWindow* window_);
 
         bool tick();
 
         void draw();
+
+        private:
+        void attribute_functions_to_ui();
     };
 }
 

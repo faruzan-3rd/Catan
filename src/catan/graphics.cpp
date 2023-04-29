@@ -96,6 +96,11 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
                             );
 
     std::cout << "Tilemap loaded!" << std::endl;
+
+    YAML::Node ui_scheme;
+    was::load_config(ui_scheme, config_["Game"]["ui"].as<str>());
+    ui = was::UIScheme(window);
+    ui.load(ui_scheme["game"]);
 }
 
 
@@ -125,7 +130,7 @@ void ctn::Graphics::draw(
         window->draw(sp_tiles[tile_type]);
 
         if(tile.get_token() == 0) continue;
-        
+
         sp_board_obj[ctn::TOKEN].setPosition(tile.get_position() + gracfg.token_offset);
         window->draw(sp_board_obj[ctn::TOKEN]);
 
@@ -157,4 +162,10 @@ void ctn::Graphics::draw(
         window->draw(sp_board_obj[path_name]);
     }
 
+    // 5. UI
+    ui.draw();
+}
+
+void ctn::Graphics::update(const was::MouseManager& mouse){
+    ui.update(mouse);
 }

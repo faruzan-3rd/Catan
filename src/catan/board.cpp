@@ -1,13 +1,17 @@
 #include "catan/board.hpp"
 
 
-bool ctn::Place::is_clicked(const vec2f& mouse_pos){
-    return false;
+bool ctn::Place::is_clicked(const vec2f& mouse_pos) const{
+    return 
+        (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + 30) &&
+        (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + 30);
 }
 
 
-bool ctn::Path::is_clicked(const vec2f& mouse_pos){
-    return false;
+bool ctn::Path::is_clicked(const vec2f& mouse_pos) const{
+    return 
+        (pos.x <= mouse_pos.x && mouse_pos.x <= pos.x + 30) &&
+        (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + 30);
 }
 
 
@@ -29,8 +33,6 @@ ctn::Harbor::Harbor(
     required_mat = req_mat_;
     required_num = req_num_;
 }
-
-#pragma region Board
 
 
 void ctn::Board::generate_board(const YAML::Node& config_){
@@ -139,9 +141,10 @@ vec2f ctn::Board::is_connected(Place& pl1, Place& pl2, const std::vector<vec2f>&
     return vec2f(0, 0);
 }
 
-std::string ctn::Board::get_path_type(const vec2f& dir) const{
+const str ctn::Board::get_path_type(const vec2f& dir) const{
     std::vector<vec2f> dirs;
     std::vector<std::string> dirs_type;
+    str ret{"Nope"};
     
     for(std::string path_type : ctn::path_types){
         int x = config["dir_names"][path_type][0].as<int>();
@@ -153,13 +156,14 @@ std::string ctn::Board::get_path_type(const vec2f& dir) const{
         dirs_type.push_back(path_type);
     }
 
-    for(int i = 0; i < dirs.size(); i++){
+    for(int i = 0; i < (int)dirs.size(); i++){
         if(was::distance_sq(dir, dirs[i]) < 5){
-            return dirs_type[i];
+            ret = dirs_type[i];
+            break;
         }
     }
-    std::cout << "WHat?" << std::endl;
-    return "Nope";
+
+    return ret;
 }
 
 void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions){
@@ -190,7 +194,7 @@ void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<ve
                 miny = std::min(pl1.get_position().y, pl2.get_position().y);
 
             vec2f pos = vec2f(minx, miny) + path_position_offset[path_type];
-            paths.push_back(Path(path_type, pos, ctn::INVISIBLE));
+            paths.push_back(Path(path_type, pos, ctn::INVISIBLE, pl1.get_id(), pl2.get_id()));
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), paths.size() - 1));
         }else{
             graph[pl1.get_id()].push_back(PathData(pl2.get_id(), done_path_id));
@@ -286,7 +290,7 @@ void ctn::Board::generate_tiles(const YAML::Node& config_){
 
     for(int token : tokens){
         int tile_id = token_placement[placement_index];
-        while(placement_index < tiles.size() && tiles[tile_id].get_tile_type() == ctn::DESERT){
+        while(placement_index < (int)tiles.size() && tiles[tile_id].get_tile_type() == ctn::DESERT){
             placement_index++;
             tile_id = token_placement[placement_index];
         }
@@ -295,8 +299,8 @@ void ctn::Board::generate_tiles(const YAML::Node& config_){
     }
 }
 
-int ctn::Board::get_clicked_place(const vec2f& mouse_pos){
-    for(int i = 0; i < places.size(); i++){
+int ctn::Board::get_clicked_place(const vec2f& mouse_pos) const{
+    for(int i = 0; i < (int)places.size(); i++){
         if(places[i].is_clicked(mouse_pos)){
             return places[i].get_id();
         }
@@ -304,8 +308,8 @@ int ctn::Board::get_clicked_place(const vec2f& mouse_pos){
     return -1;
 }
 
-int ctn::Board::get_clicked_path(const vec2f& mouse_pos){
-    for(int i = 0; i < paths.size(); i++){
+int ctn::Board::get_clicked_path(const vec2f& mouse_pos) const{
+    for(int i = 0; i < (int)paths.size(); i++){
         if(paths[i].is_clicked(mouse_pos)){
             return i;
         }
@@ -313,4 +317,10 @@ int ctn::Board::get_clicked_path(const vec2f& mouse_pos){
     return -1;
 }
 
-#pragma endregion
+void ctn::Board::build_settlement(int id, const str& type_, const str& color){
+    places[id].set_settlement(type_, color);
+}
+
+void ctn::Board::build_path(int id, const str& color){
+    paths[id].set_path(color);
+}

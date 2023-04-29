@@ -5,86 +5,189 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <functional>
 #include "SFML/Graphics.hpp"
 #include "yaml-cpp/yaml.h"
+#include "wastils/input.hpp"
 
+using vec2f = sf::Vector2f;
 
 namespace was{
 
     class BaseUIElement{
-        private:
+        protected:
         sf::RenderWindow* window_ptr;
 
         public:
-        BaseUIElement();
-        BaseUIElement(sf::RenderWindow* window);
+        BaseUIElement():
+            window_ptr{nullptr}
+        {}
+        BaseUIElement(sf::RenderWindow* window):
+            window_ptr{window}
+        {}
+        virtual ~BaseUIElement() = default;
 
-        virtual void set_text(const std::string& text){}
+        virtual void set_text(const std::string& new_str){}
 
         virtual void set_character_size(const int size){}
 
         virtual void set_color(const sf::Color& color){}
 
-        virtual void set_font(sf::Font font){}
+        virtual void set_font(const sf::Font& font_){}
 
-        virtual void set_position(sf::Vector2f pos){}
+        virtual void set_position(const vec2f& pos){}
 
         virtual void set_thickness(int thickness){}
 
+        virtual void set_function(std::function<void()> func){}
+
         virtual void draw(){}
 
-        virtual sf::Vector2f get_position(){ return sf::Vector2f(0, 0); }
+        virtual vec2f get_position(){ return vec2f(0, 0); }
+
+        virtual void update(const was::MouseManager& mouse){}
     };
 
 
     class Text: public BaseUIElement{
         private:
-
         sf::Text text;
         sf::Font font;
 
-        sf::RenderWindow* window_ptr;
-
-
         public:
-        Text();
-        Text(const std::string& text_str, sf::Font font, sf::RenderWindow* window, const int character_size, const sf::Color color, const sf::Vector2f position);
+        Text():
+            BaseUIElement{},
+            text{},
+            font{}
+        {}
+        Text(
+            const std::string& text_str, 
+            sf::Font font_, sf::RenderWindow* window, 
+            const int character_size, 
+            const sf::Color color, 
+            const vec2f position):
 
-        void set_text(const std::string& text) override;
+            BaseUIElement{window},
+            text{text_str, font, (unsigned)character_size},
+            font{font_}
+        {
+            text.setFillColor(color);
+            text.setPosition(position);
+        }
 
-        void set_character_size(const int size) override;
+        void set_text(const std::string& new_str) override{
+            text.setString(new_str);
+        }
 
-        void set_color(const sf::Color& color) override;
+        void set_character_size(const int size) override{
+            text.setCharacterSize(size);
+        }
 
-        void set_font(sf::Font font) override;
+        void set_color(const sf::Color& color) override{
+            text.setFillColor(color);
+        }
 
-        void set_position(sf::Vector2f pos) override;
+        void set_font(const sf::Font& font_) override{
+            font = font_;
+            text.setFont(font);
+        }
 
-        void draw() override;
+        void set_position(const vec2f& pos) override{
+            text.setPosition(pos);
+        }
+
+        void draw() override{
+            window_ptr->draw(text);
+        }
     };
 
 
     class Rectangle: public BaseUIElement{
         private:
         sf::RectangleShape rectangle;
-        sf::RenderWindow* window_ptr;
 
         public:
-        Rectangle();
-        Rectangle(const sf::IntRect& rect, const sf::Color& color, const int thickness, sf::RenderWindow* window);
+        Rectangle():
+            BaseUIElement{},
+            rectangle{}
+        {}
+        Rectangle(
+            const sf::IntRect& rect, 
+            const sf::Color& color, 
+            const int thickness, 
+            sf::RenderWindow* window):
+            BaseUIElement{window},
+            rectangle{vec2f{(float)rect.left, (float)rect.top}}
+        {}
 
-        void set_position(sf::Vector2f pos) override;
+        void set_position(const vec2f& pos) override{
+            rectangle.setPosition(pos);
+        }
 
-        void set_color(const sf::Color& color) override;
+        void set_color(const sf::Color& color) override{
+            rectangle.setOutlineColor(color);
+        }
 
-        void set_thickness(int thickness) override;
+        void set_thickness(int thickness) override{
+            rectangle.setOutlineThickness(thickness);
+        }
 
-        void draw() override;
+        void draw() override{
+            window_ptr->draw(rectangle);
+        }
 
-        sf::Vector2f get_position() override;
+        vec2f get_position() override{
+            return rectangle.getPosition();
+        }
     };
 
+    class Button: public BaseUIElement{
+        private:
+        sf::Texture texture;
+        sf::Sprite button_sprite;
+        std::function<void()> func;
+        sf::Mouse::Button trigger_button;
 
+        public:
+        Button():
+            BaseUIElement{},
+            texture{},
+            button_sprite{},
+            func{},
+            trigger_button{sf::Mouse::Left}
+        {}
+        Button(
+            const sf::Texture& texture_,
+            const sf::Sprite& sprite, 
+            const vec2f& position, 
+            sf::RenderWindow* window, 
+            void (*function_to_be_called)()=[]{},
+            const sf::Mouse::Button& trigger=sf::Mouse::Left):
+
+            BaseUIElement{window},
+            texture{texture_},
+            button_sprite{sprite},
+            func{function_to_be_called},
+            trigger_button{trigger}
+        {
+            button_sprite.setTexture(texture);
+            button_sprite.setPosition(position);
+        }
+
+        void set_position(const vec2f& position) override{
+            button_sprite.setPosition(position);
+        }
+
+        void set_function(std::function<void()> func_) override{
+            func = func_;
+        }
+
+        void draw() override{
+            window_ptr->draw(button_sprite);
+        }
+
+        void update(const was::MouseManager& mouse) override;
+    };
 
     class UIScheme{
         private:
@@ -98,6 +201,11 @@ namespace was{
         UIScheme();
         UIScheme(const std::string& scheme_location, sf::RenderWindow* window);
         UIScheme(const UIScheme& scheme);
+        UIScheme(sf::RenderWindow* window):
+            element_ptrs{},
+            window_ptr{window},
+            scheme_src{}
+        {}
         ~UIScheme();
 
         UIScheme& operator =(const UIScheme& other); 
@@ -106,12 +214,14 @@ namespace was{
 
         void draw();
 
-        BaseUIElement* get_ptr_by_name(const std::string& name);
+        void update(const was::MouseManager& mouse);
 
+        BaseUIElement* get_ptr_by_name(const std::string& name);
 
         private:
         Text* load_text(const YAML::Node& node);
         Rectangle* load_rectangle(const YAML::Node& node);
+        Button* load_button(const YAML::Node& node);
     };
 }
 

@@ -3,11 +3,28 @@
 
 #include <map>
 #include <string>
+#include <optional>
 #include "catan/constants.hpp"
+#include "catan/board.hpp"
+#include "wastils/input.hpp"
 
-typedef std::string str;
+using str = std::string;
 
 namespace ctn{
+    struct PlayerInput{
+        int object_type;
+        int id;
+
+        public:
+        PlayerInput():
+            object_type{-1},
+            id{-1}
+        {}
+
+        void initialize(){object_type = -1; id = -1; };
+    };
+
+
     class Player{
         std::map<str, int> owned_resources;
         std::map<str, int> owned_cards;
@@ -29,7 +46,9 @@ namespace ctn{
             color{color}
         {}
 
-        str get_color() const {return color; }
+        const str& get_color() const {return color; }
+
+        void get_input(PlayerInput& ip, const Board& board);
     };
 }
 

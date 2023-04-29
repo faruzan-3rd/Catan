@@ -39,6 +39,7 @@ namespace ctn{
     // Buildings
     static const std::string 
         HOUSE{"house"},
+        CITY{"city"},
         HORIZONTAL{"horizontal"},
         LEFT_DIAGONAL{"left_diag"},
         RIGHT_DIAGONAL{"right_diag"},
@@ -97,6 +98,18 @@ namespace ctn{
         ctn::LARGEST_ARMY,
         ctn::LONGEST_ROAD
     };
+
+    // Phase identifiers
+    static const int
+        SETUP{1},
+        RESOURCE{2},
+        TRADE{3},
+        BUILD{4};
+
+    static const int
+        PLACE{100},
+        PATH{101},
+        CARD{102};
 
     // Other
     static const std::string

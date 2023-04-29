@@ -69,10 +69,19 @@ void was::UIScheme::load(const YAML::Node& node){
         else if(elm_type == "rectangle"){
             elm_ptr = load_rectangle(elm);
         }
+        else if(elm_type == "button"){
+            elm_ptr = load_button(elm);
+        }
 
         if(elm_ptr != nullptr){
             element_ptrs[name] = elm_ptr;
         }
+    }
+}
+
+void was::UIScheme::update(const was::MouseManager& mouse){
+    for(auto pair : element_ptrs){
+        pair.second->update(mouse);
     }
 }
 
@@ -107,4 +116,28 @@ was::Rectangle* was::UIScheme::load_rectangle(const YAML::Node& node){
     was::Rectangle* rect = new Rectangle(rect_shape, color, thickness, window_ptr);
 
     return rect;
+}
+
+was::Button* was::UIScheme::load_button(const YAML::Node& node){
+    vec2f position(
+        node["position"][0].as<int>(),
+        node["position"][1].as<int>()
+    );
+    sf::IntRect rect(
+        node["sprite"][0].as<int>(),
+        node["sprite"][1].as<int>(),
+        node["sprite"][2].as<int>(),
+        node["sprite"][3].as<int>()
+    );
+    sf::Texture texture;
+    texture.loadFromFile(node["texture"].as<std::string>());
+    sf::Sprite mouse_sprite;
+    mouse_sprite.setTextureRect(rect);
+
+    return new Button(
+        texture, 
+        mouse_sprite,
+        position,
+        window_ptr
+    );    
 }

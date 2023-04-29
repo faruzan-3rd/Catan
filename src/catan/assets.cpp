@@ -34,7 +34,7 @@ std::vector<sf::Sprite> ctn::load_from_list(const YAML::Node& config, sf::Textur
 
     std::vector<sf::Sprite> sprites(sprites_rect.size());
 
-    for(const YAML::Node elm : config){
+    for(const YAML::Node& elm : config){
         const std::vector<int>& rect = elm.as<std::vector<int>>();
         if(rect.size() != 4){
             std::cout << "Got an incomplete list of rects. Returning an incomplete sprite vector." << std::endl;

@@ -1,0 +1,7 @@
+game:
+  scheme:
+    - type: button
+      name: validate
+      position: [30, 30]
+      texture: "assets/art/test_button.png"
+      sprite: [0, 0, 32, 32]
