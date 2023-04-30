@@ -16,16 +16,19 @@ namespace was{
 
     class BaseUIElement{
         protected:
+        bool enabled;
         sf::RenderWindow* window_ptr;
 
         public:
         BaseUIElement():
+            enabled{true},
             window_ptr{nullptr}
         {}
         BaseUIElement(sf::RenderWindow* window):
+            enabled{true},
             window_ptr{window}
         {}
-        virtual ~BaseUIElement() = default;
+        virtual ~BaseUIElement(){};
 
         virtual void set_text(const std::string& new_str){}
 
@@ -41,11 +44,17 @@ namespace was{
 
         virtual void set_function(std::function<void()> func){}
 
-        virtual void draw(){}
+        void draw(){if(enabled) draw_(); }
+
+        virtual void draw_(){}
 
         virtual vec2f get_position(){ return vec2f(0, 0); }
 
-        virtual void update(const was::MouseManager& mouse){}
+        void update(const was::MouseManager& mouse){if(enabled) update_(mouse); }
+
+        virtual void update_(const was::MouseManager& mouse){}
+
+        virtual void enable(const bool& enable_){enabled = enable_; }
     };
 
 
@@ -96,7 +105,7 @@ namespace was{
             text.setPosition(pos);
         }
 
-        void draw() override{
+        void draw_() override{
             window_ptr->draw(text);
         }
     };
@@ -132,7 +141,7 @@ namespace was{
             rectangle.setOutlineThickness(thickness);
         }
 
-        void draw() override{
+        void draw_() override{
             window_ptr->draw(rectangle);
         }
 
@@ -182,11 +191,11 @@ namespace was{
             func = func_;
         }
 
-        void draw() override{
+        void draw_() override{
             window_ptr->draw(button_sprite);
         }
 
-        void update(const was::MouseManager& mouse) override;
+        void update_(const was::MouseManager& mouse) override;
     };
 
     class UIScheme{
@@ -201,14 +210,15 @@ namespace was{
         UIScheme();
         UIScheme(const std::string& scheme_location, sf::RenderWindow* window);
         UIScheme(const UIScheme& scheme);
+        UIScheme& operator =(const UIScheme& other); 
         UIScheme(sf::RenderWindow* window):
             element_ptrs{},
             window_ptr{window},
             scheme_src{}
         {}
         ~UIScheme();
-
-        UIScheme& operator =(const UIScheme& other); 
+        UIScheme(UIScheme&& other);
+        UIScheme& operator=(UIScheme&& rhs);
 
         void load(const YAML::Node& node);
 

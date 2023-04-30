@@ -22,8 +22,9 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): Ga
     mouse = was::MouseManager(window);
 
     progressmng.board = &board;
+    progressmng.ui = graphics.get_ui_ptr();
     progressmng.build_game_logic();
-    eventmanager = EventManager(&mouse, &progressmng, &board);
+    eventmanager = EventManager(&mouse, &progressmng, &board, &graphics);
 
     attribute_functions_to_ui();
 
@@ -44,6 +45,7 @@ bool ctn::GameManager::tick(){
     while (window->pollEvent(sf_event))
     {
         if(sf_event.type == sf::Event::Closed){
+            window->setActive(false);
             window->close();
             std::cout << "Quit" << std::endl;
             return false;

@@ -1,4 +1,4 @@
-#include "catan/gamemanager.hpp"
+#include "catan/graphics.hpp"
 
 
 void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* window_){
@@ -29,7 +29,8 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
 
     std::cout << "Loading board objects..." << std::endl;
     std::vector<str> building_types = ctn::house_types + ctn::path_types;
-    std::map<str, sprt> tmp;
+    std::map<str, sprt> tmp, tmp_transparent;
+    float alpha_preview = assets_cfg["Board"]["Buildings"]["preview_alpha"].as<float>();
     for(str color : ctn::colors){
         int
             offset_x = assets_cfg["Board"]["Buildings"]["Color-offsets"][color][0].as<int>(),
@@ -44,8 +45,21 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
                 offset_x, 
                 offset_y, 
                 color);
+        tmp_transparent = ctn::load_sprites(
+            assets_cfg["Board"]["Buildings"],
+                tx_board_objects, 
+                building_types, 
+                1.0f, 
+                255 * alpha_preview, 
+                offset_x, 
+                offset_y, 
+                color
+        );
         for(auto p : tmp){
             sp_board_obj[p.first] = p.second;
+        }
+        for(auto p : tmp_transparent){
+            sp_board_obj_preview[p.first] = p.second;
         }
     }
     sp_board_obj[ctn::NONE] = ctn::load_sprite(assets_cfg["Board"]["Buildings"]["Sprites"]["none"], tx_board_objects);
@@ -161,6 +175,10 @@ void ctn::Graphics::draw(
         sp_board_obj[path_name].setPosition(path.get_position());
         window->draw(sp_board_obj[path_name]);
     }
+    if(preview_type != ctn::NONE){
+        sp_board_obj_preview[preview_type].setPosition(preview_pos);
+        window->draw(sp_board_obj_preview[preview_type]);
+    }
 
     // 5. UI
     ui.draw();
@@ -168,4 +186,27 @@ void ctn::Graphics::draw(
 
 void ctn::Graphics::update(const was::MouseManager& mouse){
     ui.update(mouse);
+}
+
+void ctn::Graphics::set_preview_build(const str& color, int build_type, int id, Board* board, bool setup){
+    if(build_type == -1){
+        preview_type = ctn::NONE;
+        preview_pos = vec2f(0, 0);
+    }
+    else if(build_type == ctn::PLACE){
+        if(board->can_build_settlement_here(color, id, setup)){
+            std::cout << "Hello " << color + ctn::HOUSE << std::endl;
+            preview_type = color + ctn::HOUSE;
+            preview_pos = board->get_places()[id].get_position();
+        }
+    }
+    else if(build_type == ctn::PATH){
+        if(board->can_build_path_here(color, id)){
+            preview_type = color + board->get_paths()[id].get_path_type();
+            preview_pos = board->get_paths()[id].get_position();
+        }
+    }
+    else{
+        std::cout << "Preview failed" << std::endl;
+    }
 }

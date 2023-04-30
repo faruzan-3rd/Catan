@@ -12,7 +12,9 @@ x64/
 app
 .DS_STORE
 assets/art/tiles/
+assets/art/ui/
 compile_commands.json
 .cache/
 *.png~
 a.out
+*.kra

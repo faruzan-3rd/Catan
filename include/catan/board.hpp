@@ -200,6 +200,9 @@ namespace ctn{
         void build_settlement(int id, const str& type_, const str& color);
         void build_path(int id, const str& color);
 
+        bool can_build_settlement_here(const str& color, int id, bool is_setup_phase);
+        bool can_build_path_here(const str& color, int id);
+
         private:
         void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions);
         vec2f is_connected(Place& pl1, Place& pl2, const std::vector<vec2f>& directions, int max_radius=5);

@@ -8,17 +8,21 @@
 #include <iostream>
 #include "catan/board.hpp"
 #include "catan/player.hpp"
+#include "wastils/UI.hpp"
 
 extern std::vector<ctn::Player> players;
 
 
 namespace ctn{
-    struct SetupData{
+    struct GameState{
         bool setup_phase = true;
         int finished_players_num = 0;
-        bool second_tour = false;
+        bool 
+            second_tour = false,
+            can_place_settlement = true,
+            can_place_path = false;
 
-        SetupData() = default;
+        GameState() = default;
     };
 
     class State{
@@ -73,8 +77,10 @@ namespace ctn{
         std::map<std::string, Transition> transitions;
 
         public:
-        SetupData setupdata;
+        GameState gamestate;
         Board* board;
+        was::UIScheme* ui;
+
         int current_player = 0;
         int selected_id = -1;
         int selection_type = -1;

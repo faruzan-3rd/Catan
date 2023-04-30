@@ -10,22 +10,29 @@ void ctn::EventManager::update(){
         clicked_settlement = board->get_clicked_place(mouse_pos);
 
     if(clicked_path != -1){
-        progress->selected_id = clicked_path;
-        progress->selection_type = ctn::PATH;
-        std::cout << "Selected path " << clicked_path << std::endl;
+        if((progress->gamestate.setup_phase && progress->gamestate.can_place_path) || progress->gamestate.can_place_path){
+            progress->selected_id = clicked_path;
+            progress->selection_type = ctn::PATH;
+            graphics->set_preview_build(players[progress->current_player].get_color(), ctn::PATH, clicked_path, board, progress->gamestate.setup_phase);
+            std::cout << "Selected path " << clicked_path << std::endl;
+        }
     }
     if(clicked_settlement != -1){
-        progress->selected_id = clicked_settlement;
-        progress->selection_type = ctn::PLACE;
-        std::cout << "Selected settlement " << clicked_settlement << std::endl;
+        if((progress->gamestate.setup_phase && progress->gamestate.can_place_settlement) || progress->gamestate.can_place_settlement){
+            progress->selected_id = clicked_settlement;
+            progress->selection_type = ctn::PLACE;
+            graphics->set_preview_build(players[progress->current_player].get_color(), ctn::PLACE, clicked_settlement, board, progress->gamestate.setup_phase);
+            std::cout << "Selected settlement " << clicked_settlement << std::endl;
+        }
     }
 }
 
 
 void ctn::EventManager::build_validate(){
-    str prefix = (progress->setupdata.setup_phase ? "setup_" : "");
+    str prefix = (progress->gamestate.setup_phase ? "setup_" : "");
     str building_type = (progress->selection_type == ctn::PLACE ? "validate_settlement" : "validate_path");
 
-    std::cout << prefix + building_type << std::endl;
-    progress->execute_transition(prefix + building_type);
+    if(progress->execute_transition(prefix + building_type)){
+        graphics->set_preview_build(ctn::INVISIBLE, -1, -1, board, false);
+    }
 }

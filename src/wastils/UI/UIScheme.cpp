@@ -8,7 +8,6 @@ was::UIScheme::UIScheme(){
 
 was::UIScheme::UIScheme(const std::string& scheme_location, sf::RenderWindow* window){
     window_ptr = window;
-
     if(was::load_config(scheme_src, scheme_location) == 1){
         std::cout << "Problem occured while loading UIs" << std::endl;
         return;
@@ -19,11 +18,8 @@ was::UIScheme::UIScheme(const std::string& scheme_location, sf::RenderWindow* wi
 
 was::UIScheme::~UIScheme(){
     for(auto p : element_ptrs){
-        if(p.second != nullptr){
-            delete p.second;
-        }
+        delete p.second;
     }
-
     element_ptrs.clear();
 }
 
@@ -39,6 +35,31 @@ was::UIScheme& was::UIScheme::operator =(const UIScheme& other){
     scheme_src = other.scheme_src;
 
     load(scheme_src);
+
+    return *this;
+}
+
+was::UIScheme::UIScheme(UIScheme&& other){
+    element_ptrs = other.element_ptrs;
+    window_ptr = other.window_ptr;
+    scheme_src = other.scheme_src;
+
+    other.element_ptrs.clear();
+}
+
+was::UIScheme& was::UIScheme::operator=(UIScheme&& rhs){
+    if(this != &rhs){
+        window_ptr = rhs.window_ptr;
+        scheme_src = rhs.scheme_src;
+
+        for(auto p : element_ptrs){
+            delete p.second;
+        }
+        element_ptrs.clear();
+
+        element_ptrs = rhs.element_ptrs;
+        rhs.element_ptrs.clear();
+    }
 
     return *this;
 }
@@ -81,7 +102,7 @@ void was::UIScheme::load(const YAML::Node& node){
 
 void was::UIScheme::update(const was::MouseManager& mouse){
     for(auto pair : element_ptrs){
-        pair.second->update(mouse);
+        pair.second->update_(mouse);
     }
 }
 

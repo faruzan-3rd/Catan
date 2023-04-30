@@ -4,96 +4,55 @@
 bool is_valid_settlement(ctn::ProgressManager* progress, bool setup){
     if(progress->selection_type != ctn::PLACE) return false;
 
-    auto graph = progress->board->get_graph();
-    auto settlements = progress->board->get_places();
-    auto paths = progress->board->get_paths();
-    bool ok = false;
-    // Condition 1: Needs to be empty
-    if(settlements[progress->selected_id].get_type() != ctn::NONE){
-        return false;
-    }
-
-    for(auto path : graph[progress->selected_id]){
-        // Condition 2: No other settlement around
-        if(settlements[path.to].get_type() != ctn::NONE){
-            return false;
-        }
-
-        // Condition 3: Connected to a path(except for setup phase)
-        if(setup) ok = true;
-        else{
-            if(paths[path.path_id].get_color() == players[progress->current_player].get_color()){
-                ok = true;
-            }
-        }
-    }
-
-    return ok;
+    return progress->board->can_build_settlement_here(players[progress->current_player].get_color(), progress->selected_id, setup);
 }
 
 bool is_valid_path(ctn::ProgressManager* progress){
     if(progress->selection_type != ctn::PATH) return false;
 
-    auto graph = progress->board->get_graph();
-    auto settlements = progress->board->get_places();
-    auto paths = progress->board->get_paths();
-    auto selected_path = paths[progress->selected_id];
+    auto selected_path = progress->selected_id;
     auto current_color = players[progress->current_player].get_color();
-
-    // Condition 1: empty
-    if(selected_path.get_color() != ctn::INVISIBLE){
-        return false;
-    }
-
-    // Condition 2: Adjacent settlement
-    if(settlements[selected_path.get_place1()].get_color() == current_color || settlements[selected_path.get_place2()].get_color() == current_color){
-        return true;
-    }
-
-    // Condition 3: Adjacent path
-    for(auto path_data : graph[selected_path.get_place1()]){
-        if(paths[path_data.path_id].get_color() == current_color){
-            return true;
-        }
-    }
-    for(auto path_data : graph[selected_path.get_place2()]){
-        if(paths[path_data.path_id].get_color() == current_color){
-            return true;
-        }
-    }
-
-    return false;
+    return progress->board->can_build_path_here(current_color, selected_path);
 }
 
 void build_settlement(ctn::ProgressManager* progress){
     progress->board->build_settlement(progress->selected_id, ctn::HOUSE, players[progress->current_player].get_color());
 
-    if(progress->setupdata.second_tour && progress->setupdata.setup_phase){
-        std::cout << "Generate resource!" << std::endl;
+    if(progress->gamestate.setup_phase){
+        if(progress->gamestate.second_tour){
+            std::cout << "Generate resource!" << std::endl;
+        }
+
+        progress->gamestate.can_place_path = true;
+        progress->gamestate.can_place_settlement = false;
     }
 }
 
 void build_path(ctn::ProgressManager* progress){
     progress->board->build_path(progress->selected_id, players[progress->current_player].get_color());
 
-    if(progress->setupdata.setup_phase){
-        if(progress->setupdata.finished_players_num == (int)players.size()){
-            if(progress->setupdata.second_tour){
-                progress->setupdata.setup_phase = false;
+    if(progress->gamestate.setup_phase){
+        progress->gamestate.can_place_path = false;
+        progress->gamestate.finished_players_num++;
+        if(progress->gamestate.finished_players_num == (int)players.size()){
+            if(progress->gamestate.second_tour){
+                progress->gamestate.setup_phase = false;
+                return;
             }
             else{
-                progress->setupdata.second_tour = true;
-                progress->setupdata.finished_players_num = 0;
+                progress->gamestate.second_tour = true;
+                progress->gamestate.finished_players_num = 0;
             }
         }
         else{
-            progress->current_player = (progress->current_player + (progress->setupdata.second_tour ? -1 : 1) + players.size()) % players.size();
-            progress->setupdata.finished_players_num++;
+            progress->current_player = (progress->current_player + (progress->gamestate.second_tour ? -1 : 1) + players.size()) % players.size();
         }
+
+        progress->gamestate.can_place_settlement = true;
     }
     else{
-        progress->current_player++;
-        progress->current_player %= players.size();
+        // progress->current_player++;
+        // progress->current_player %= players.size();
     }
 }
 

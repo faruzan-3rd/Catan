@@ -324,3 +324,61 @@ void ctn::Board::build_settlement(int id, const str& type_, const str& color){
 void ctn::Board::build_path(int id, const str& color){
     paths[id].set_path(color);
 }
+
+bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_setup_phase){
+    if(!(0 <= id && id < (int)places.size())) return false;
+
+    bool ok = false;
+    // Condition 1: Needs to be empty
+    if(places[id].get_type() != ctn::NONE){
+        std::cout << "Cond 1" << std::endl;
+        return false;
+    }
+
+    for(auto path : graph[id]){
+        // Condition 2: No other settlement around
+        if(places[path.to].get_type() != ctn::NONE){
+            std::cout << "Cond2" << std::endl;
+            return false;
+        }
+
+        // Condition 3: Connected to a path(except for setup phase)
+        if(is_setup_phase) ok = true;
+        else{
+            if(paths[path.path_id].get_color() == color){
+                ok = true;
+            }
+        }
+    }
+
+    return ok;
+}
+
+bool ctn::Board::can_build_path_here(const str& color, int id){
+    if(!(0 <= id && id < (int)paths.size())) return false;
+
+    auto selected_path = paths[id];
+    // Condition 1: empty
+    if(selected_path.get_color() != ctn::INVISIBLE){
+        return false;
+    }
+
+    // Condition 2: Adjacent settlement
+    if(places[selected_path.get_place1()].get_color() == color || places[selected_path.get_place2()].get_color() == color){
+        return true;
+    }
+
+    // Condition 3: Adjacent path
+    for(auto path_data : graph[selected_path.get_place1()]){
+        if(paths[path_data.path_id].get_color() == color){
+            return true;
+        }
+    }
+    for(auto path_data : graph[selected_path.get_place2()]){
+        if(paths[path_data.path_id].get_color() == color){
+            return true;
+        }
+    }
+
+    return false;
+}
