@@ -111,10 +111,29 @@ namespace ctn{
         PATH{101},
         CARD{102};
 
+    // Dice stuff
+    static const std::string
+        ONE{"one"},
+        TWO{"two"},
+        THREE{"three"},
+        FOUR{"four"},
+        FIVE{"five"},
+        SIX{"six"};
+
+    static const std::vector<std::string> dice_faces = {
+        ONE,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        SIX
+    };
+
     // Other
     static const std::string
         HARBOR{"harbor"},
         TOKEN{"token"},
-        SEA{"sea"};
+        SEA{"sea"},
+        ROBBER{"robber"};
 }
 #endif

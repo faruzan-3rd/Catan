@@ -13,12 +13,24 @@ namespace ctn{
         vec2f
             tile_offset,
             token_offset,
-            token_txt_offset;
+            token_txt_offset,
+            robber_offset;
+
+        vec2f 
+            dice1_pos,
+            dice2_pos;
+
+        bool dices_enabled = false;
+        int
+            dice_1 = 1,
+            dice_2 = 1;
 
         vec2i
             u,
             v,
             sea_dimension;
+
+        graphicscfg() = default;
     };
 
     class Graphics{
@@ -28,14 +40,16 @@ namespace ctn{
         sf::Texture
             tx_board_objects,
             tx_environment,
-            tx_tilemap;
+            tx_tilemap,
+            tx_dice;
 
         // In-game sprite map
         std::map<str, sprt>
             sp_tiles,
             sp_board_obj,
             sp_board_obj_preview,
-            sp_harbor;
+            sp_harbor,
+            sp_dices;
         
         // Font
         sf::Font ft_mario;
@@ -55,11 +69,7 @@ namespace ctn{
 
         void load_sprites(const YAML::Node& config_, sf::RenderWindow* window_);
 
-        void draw(
-            const std::vector<ctn::BoardTile>& tiles, 
-            const std::vector<ctn::Place>& places,
-            const std::vector<ctn::Harbor>& harbors,
-            const std::vector<ctn::Path>& paths);
+        void draw(const Board* board);
 
         void update(const was::MouseManager& mouse);
 
@@ -67,7 +77,11 @@ namespace ctn{
             ui.get_ptr_by_name(ui_name)->set_function(func);
         }
 
-        void set_preview_build(const str& color, int build_type, int id, Board* board, bool setup);
+        void set_preview_build(const str& color, int build_type, int id, Board* board);
+
+        void enable_dice(int dice_1, int dice_2){gracfg.dice_1 = dice_1; gracfg.dice_2 = dice_2; gracfg.dices_enabled = true; }
+
+        void disable_dice(){gracfg.dices_enabled = false; };
 
         was::UIScheme* get_ui_ptr() {return &ui; }
     };

@@ -8,21 +8,24 @@ void ctn::EventManager::update(){
     int 
         clicked_path = board->get_clicked_path(mouse_pos),
         clicked_settlement = board->get_clicked_place(mouse_pos);
+    
+    str color = players[progress->current_player].get_color();
 
     if(clicked_path != -1){
-        if((progress->gamestate.setup_phase && progress->gamestate.can_place_path) || progress->gamestate.can_place_path){
+        int req_settlement = (progress->gamestate.setup_phase ? progress->gamestate.last_placed_settlement : -1);
+        bool ok = (progress->gamestate.setup_phase && progress->gamestate.can_place_path) || progress->gamestate.can_place_path;
+        if(ok && board->can_build_path_here(color, clicked_path, req_settlement)){
             progress->selected_id = clicked_path;
             progress->selection_type = ctn::PATH;
-            graphics->set_preview_build(players[progress->current_player].get_color(), ctn::PATH, clicked_path, board, progress->gamestate.setup_phase);
-            std::cout << "Selected path " << clicked_path << std::endl;
+            graphics->set_preview_build(color, ctn::PATH, clicked_path, board);
         }
     }
     if(clicked_settlement != -1){
-        if((progress->gamestate.setup_phase && progress->gamestate.can_place_settlement) || progress->gamestate.can_place_settlement){
+        bool ok = (progress->gamestate.setup_phase && progress->gamestate.can_place_settlement) || progress->gamestate.can_place_settlement;
+        if(ok && board->can_build_settlement_here(color, clicked_settlement, progress->gamestate.setup_phase)){
             progress->selected_id = clicked_settlement;
             progress->selection_type = ctn::PLACE;
-            graphics->set_preview_build(players[progress->current_player].get_color(), ctn::PLACE, clicked_settlement, board, progress->gamestate.setup_phase);
-            std::cout << "Selected settlement " << clicked_settlement << std::endl;
+            graphics->set_preview_build(players[progress->current_player].get_color(), ctn::PLACE, clicked_settlement, board);
         }
     }
 }
@@ -33,6 +36,6 @@ void ctn::EventManager::build_validate(){
     str building_type = (progress->selection_type == ctn::PLACE ? "validate_settlement" : "validate_path");
 
     if(progress->execute_transition(prefix + building_type)){
-        graphics->set_preview_build(ctn::INVISIBLE, -1, -1, board, false);
+        graphics->set_preview_build(ctn::INVISIBLE, -1, -1, board);
     }
 }

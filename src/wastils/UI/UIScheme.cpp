@@ -102,7 +102,7 @@ void was::UIScheme::load(const YAML::Node& node){
 
 void was::UIScheme::update(const was::MouseManager& mouse){
     for(auto pair : element_ptrs){
-        pair.second->update_(mouse);
+        pair.second->update(mouse);
     }
 }
 

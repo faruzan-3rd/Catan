@@ -46,15 +46,15 @@ namespace was{
 
         void draw(){if(enabled) draw_(); }
 
-        virtual void draw_(){}
-
         virtual vec2f get_position(){ return vec2f(0, 0); }
 
         void update(const was::MouseManager& mouse){if(enabled) update_(mouse); }
 
-        virtual void update_(const was::MouseManager& mouse){}
-
         virtual void enable(const bool& enable_){enabled = enable_; }
+
+        protected:
+        virtual void update_(const was::MouseManager& mouse){}
+        virtual void draw_(){}
     };
 
 
@@ -64,11 +64,7 @@ namespace was{
         sf::Font font;
 
         public:
-        Text():
-            BaseUIElement{},
-            text{},
-            font{}
-        {}
+        Text() = default;
         Text(
             const std::string& text_str, 
             sf::Font font_, sf::RenderWindow* window, 

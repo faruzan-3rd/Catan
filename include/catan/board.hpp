@@ -179,9 +179,10 @@ namespace ctn{
         std::vector<ctn::Path> paths;
         std::vector<ctn::BoardTile> tiles;
         std::vector<std::vector<ctn::PathData>> graph;
+        int robber_tile;
 
         public:
-        Board(){};
+        Board() = default;
 
         void generate_board(const YAML::Node& config_);
         void generate_graph();
@@ -190,18 +191,19 @@ namespace ctn{
         void attribute_resources();
         int get_clicked_place(const vec2f& mouse_pos) const;
         int get_clicked_path(const vec2f& mouse_pos) const;
+        int get_robber_tile() const{return robber_tile; }
 
-        const std::vector<ctn::Place>& get_places(){return places; }
-        const std::vector<ctn::Harbor>& get_harbors(){return harbors; }
-        const std::vector<ctn::Path>& get_paths(){return paths; }
-        const std::vector<ctn::BoardTile>& get_tiles(){return tiles; }
-        const std::vector<std::vector<ctn::PathData>>& get_graph(){return graph; }
+        const std::vector<ctn::Place>& get_places() const{return places; }
+        const std::vector<ctn::Harbor>& get_harbors() const{return harbors; }
+        const std::vector<ctn::Path>& get_paths() const{return paths; }
+        const std::vector<ctn::BoardTile>& get_tiles() const{return tiles; }
+        const std::vector<std::vector<ctn::PathData>>& get_graph() const{return graph; }
 
         void build_settlement(int id, const str& type_, const str& color);
         void build_path(int id, const str& color);
 
         bool can_build_settlement_here(const str& color, int id, bool is_setup_phase);
-        bool can_build_path_here(const str& color, int id);
+        bool can_build_path_here(const str& color, int id, int required_adj_settlement=-1);
 
         private:
         void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions);

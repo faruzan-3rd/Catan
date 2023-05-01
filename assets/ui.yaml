@@ -1,7 +1,40 @@
+some-stuff:
+  - &mariomaker assets/fonts/mariomaker.ttf
+
 game:
   scheme:
+    - type: text
+      name: phase
+      text: "Setup phase"
+      position: [525, 10]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 30
+    
+    - type: text
+      name: player_turn
+      text: "Player n's turn"
+      position: [530, 55]
+      font: *mariomaker
+      color: [20, 20, 20]
+      size: 22
+
+    - type: text
+      name: order
+      text: "Build a settlement"
+      position: [540, 85]
+      font: *mariomaker
+      color: [30, 30, 30]
+      size: 15
+
     - type: button
-      name: validate
+      name: validate_build
       position: [50, 700]
       texture: "assets/art/ui.png"
       sprite: [0, 0, 64, 64]
+
+    - type: button
+      name: roll_dice
+      position: [120, 700]
+      texture: "assets/art/ui.png"
+      sprite: [64, 0, 64, 64]

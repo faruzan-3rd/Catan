@@ -23,6 +23,9 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     if(!tx_tilemap.loadFromFile(assets_cfg["Tiles"]["texture"].as<str>())){
         std::cout << "Tilemap texture load failed" << std::endl;
     }
+    if(!tx_dice.loadFromFile(assets_cfg["Dice"]["texture"].as<str>())){
+        std::cout << "Dice texture load failed" << std::endl;
+    }
     ft_mario.loadFromFile(assets_cfg["Test"]["font"].as<str>());
     std::cout << "Textures loaded!" << std::endl;
 
@@ -64,6 +67,7 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     }
     sp_board_obj[ctn::NONE] = ctn::load_sprite(assets_cfg["Board"]["Buildings"]["Sprites"]["none"], tx_board_objects);
     sp_board_obj[ctn::TOKEN] = ctn::load_sprite(assets_cfg["Board"]["Other"]["token"], tx_board_objects);
+    sp_board_obj[ctn::ROBBER] = ctn::load_sprite(assets_cfg["Board"]["Other"]["robber"], tx_board_objects);
     gracfg.token_offset = vec2f(
         board_cfg["token_offset"][0].as<int>(),
         board_cfg["token_offset"][1].as<int>()
@@ -71,6 +75,10 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     gracfg.token_txt_offset = vec2f(
         board_cfg["token_txt_offset"][0].as<int>(),
         board_cfg["token_txt_offset"][1].as<int>()
+    );
+    gracfg.robber_offset = vec2f(
+        board_cfg["robber-offset"][0].as<int>(),
+        board_cfg["robber-offset"][1].as<int>()
     );
     txt_token = std::unique_ptr<was::Text>(
         new was::Text(
@@ -80,6 +88,15 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
             board_cfg["token_txt_size"].as<int>(),
             sf::Color::Black,
             vec2f(0, 0))
+    );
+    sp_dices = ctn::load_sprites(assets_cfg["Dice"], tx_dice, ctn::dice_faces, 2.0f);
+    gracfg.dice1_pos = vec2f(
+        board_cfg["dice1-pos"][0].as<int>(),
+        board_cfg["dice1-pos"][1].as<int>()
+    );
+    gracfg.dice2_pos = vec2f(
+        board_cfg["dice2-pos"][0].as<int>(),
+        board_cfg["dice2-pos"][1].as<int>()
     );
     std::cout << "Board objects loaded!" << std::endl;
 
@@ -118,12 +135,14 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
 }
 
 
-void ctn::Graphics::draw(
-            const std::vector<ctn::BoardTile>& tiles, 
-            const std::vector<ctn::Place>& places,
-            const std::vector<ctn::Harbor>& harbors,
-            const std::vector<ctn::Path>& paths)
+void ctn::Graphics::draw(const Board* board)
     {
+    const std::vector<ctn::BoardTile>& tiles = board->get_tiles();
+    const std::vector<ctn::Place>& places = board->get_places();
+    const std::vector<ctn::Harbor>& harbors = board->get_harbors();
+    const std::vector<ctn::Path>& paths = board->get_paths();
+    int robber_tile = board->get_robber_tile();
+
     // 1. Sea (background)
     for(int x = 0; x < gracfg.sea_dimension.x; x++){
         for(int y = 0; y < gracfg.sea_dimension.y; y++){
@@ -152,6 +171,9 @@ void ctn::Graphics::draw(
         txt_token->set_position(tile.get_position() + gracfg.token_txt_offset);
         txt_token->draw();
     }
+    sp_board_obj[ctn::ROBBER].setPosition(tiles[robber_tile].get_position() + gracfg.robber_offset);
+    window->draw(sp_board_obj[ctn::ROBBER]);
+
 
     // 3. Harbor stuff
     for(const ctn::Harbor& harbor : harbors){
@@ -180,7 +202,15 @@ void ctn::Graphics::draw(
         window->draw(sp_board_obj_preview[preview_type]);
     }
 
-    // 5. UI
+    // 5. Other
+    if(gracfg.dices_enabled){
+        sp_dices[ctn::dice_faces[gracfg.dice_1 - 1]].setPosition(gracfg.dice1_pos);
+        window->draw(sp_dices[ctn::dice_faces[gracfg.dice_1 - 1]]);
+        sp_dices[ctn::dice_faces[gracfg.dice_2 - 1]].setPosition(gracfg.dice2_pos);
+        window->draw(sp_dices[ctn::dice_faces[gracfg.dice_2 - 1]]);
+    }
+
+    // 6. UI
     ui.draw();
 }
 
@@ -188,23 +218,19 @@ void ctn::Graphics::update(const was::MouseManager& mouse){
     ui.update(mouse);
 }
 
-void ctn::Graphics::set_preview_build(const str& color, int build_type, int id, Board* board, bool setup){
+void ctn::Graphics::set_preview_build(const str& color, int build_type, int id, Board* board){
     if(build_type == -1){
         preview_type = ctn::NONE;
         preview_pos = vec2f(0, 0);
     }
     else if(build_type == ctn::PLACE){
-        if(board->can_build_settlement_here(color, id, setup)){
-            std::cout << "Hello " << color + ctn::HOUSE << std::endl;
-            preview_type = color + ctn::HOUSE;
-            preview_pos = board->get_places()[id].get_position();
-        }
+        preview_type = color + ctn::HOUSE;
+        preview_pos = board->get_places()[id].get_position();
+        
     }
     else if(build_type == ctn::PATH){
-        if(board->can_build_path_here(color, id)){
-            preview_type = color + board->get_paths()[id].get_path_type();
-            preview_pos = board->get_paths()[id].get_position();
-        }
+        preview_type = color + board->get_paths()[id].get_path_type();
+        preview_pos = board->get_paths()[id].get_position();
     }
     else{
         std::cout << "Preview failed" << std::endl;

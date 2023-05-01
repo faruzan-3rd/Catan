@@ -185,7 +185,6 @@ void ctn::Board::make_path_if_exist(Place& pl1, Place& pl2, const std::vector<ve
             }
         }
 
-
         if(done_path_id == -1){
             std::string path_type = get_path_type(dir);
             std::string path_final_name = ctn::BLUE + path_type;
@@ -275,6 +274,10 @@ void ctn::Board::generate_tiles(const YAML::Node& config_){
 
             tiles[index] = tile;
             tile_position += v;
+
+            if(tile_typ == ctn::DESERT){
+                robber_tile = tiles.size() - index - 1;
+            }
         }
 
         remain--;
@@ -331,14 +334,12 @@ bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_set
     bool ok = false;
     // Condition 1: Needs to be empty
     if(places[id].get_type() != ctn::NONE){
-        std::cout << "Cond 1" << std::endl;
         return false;
     }
 
     for(auto path : graph[id]){
         // Condition 2: No other settlement around
         if(places[path.to].get_type() != ctn::NONE){
-            std::cout << "Cond2" << std::endl;
             return false;
         }
 
@@ -354,10 +355,18 @@ bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_set
     return ok;
 }
 
-bool ctn::Board::can_build_path_here(const str& color, int id){
+bool ctn::Board::can_build_path_here(const str& color, int id, int required_adj_settlement){
     if(!(0 <= id && id < (int)paths.size())) return false;
 
     auto selected_path = paths[id];
+    
+    // Condition 0: Must be adjacent to the settlement if specified
+    if(required_adj_settlement != -1){
+        if(!(selected_path.get_place1() == required_adj_settlement || selected_path.get_place2() == required_adj_settlement)){
+            return false;
+        }
+    }
+
     // Condition 1: empty
     if(selected_path.get_color() != ctn::INVISIBLE){
         return false;

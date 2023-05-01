@@ -61,3 +61,15 @@ Board:
     
   Other:
     token: [192, 32, 32, 32]
+    robber: [0, 229, 26, 26]
+
+Dice:
+  texture: "assets/art/dice_roll.png"
+
+  Sprites:
+    one: [0, 0, 16, 16]
+    two: [16, 0, 16, 16]
+    three: [32, 0, 16, 16]
+    four: [48, 0, 16, 16]
+    five: [64, 0, 16, 16]
+    six: [80, 0, 16, 16]

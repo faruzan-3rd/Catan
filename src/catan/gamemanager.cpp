@@ -21,6 +21,7 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): Ga
 
     mouse = was::MouseManager(window);
 
+    progressmng.graphics = &graphics;
     progressmng.board = &board;
     progressmng.ui = graphics.get_ui_ptr();
     progressmng.build_game_logic();
@@ -33,7 +34,8 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): Ga
 }
 
 void ctn::GameManager::attribute_functions_to_ui(){
-    graphics.set_function("validate", std::bind(&EventManager::build_validate, &eventmanager));
+    graphics.set_function("validate_build", std::bind(&EventManager::build_validate, &eventmanager));
+    graphics.set_function("roll_dice", std::bind(&ProgressManager::execute_transition, &progressmng, "roll_dices"));
 }
 
 bool ctn::GameManager::tick(){
@@ -66,9 +68,5 @@ bool ctn::GameManager::tick(){
 }
 
 void ctn::GameManager::draw(){
-    graphics.draw(
-        board.get_tiles(),
-        board.get_places(),
-        board.get_harbors(),
-        board.get_paths());
+    graphics.draw(&board);
 }
