@@ -44,6 +44,8 @@ namespace was{
 
         virtual void set_function(std::function<void()> func){}
 
+        virtual void set_new_image(const sf::Texture& texture_, const sf::Sprite& sprite){}
+
         void draw(){if(enabled) draw_(); }
 
         virtual vec2f get_position(){ return vec2f(0, 0); }
@@ -146,6 +148,39 @@ namespace was{
         }
     };
 
+    class Image: public BaseUIElement{
+        private:
+        sf::Texture texture;
+        sf::Sprite sprite;
+
+        public:
+        Image() = default;
+        Image(const sf::Texture& texture_, const sf::Sprite& sprite_, sf::RenderWindow* window):
+            BaseUIElement(window),
+            texture(texture_),
+            sprite(sprite_) 
+        {
+            sprite.setTexture(texture);    
+        }
+        
+        vec2f get_position() override{
+            return sprite.getPosition();
+        }
+
+        void set_position(const vec2f& pos) override{
+            sprite.setPosition(pos);
+        }
+
+        void set_new_image(const sf::Texture& texture_, const sf::Sprite& sprite_) override{
+            texture = texture_;
+            sprite = sprite_;
+        }
+        
+        void draw_() override{
+            window_ptr->draw(sprite);
+        }
+    };
+
     class Button: public BaseUIElement{
         private:
         sf::Texture texture;
@@ -228,6 +263,7 @@ namespace was{
         Text* load_text(const YAML::Node& node);
         Rectangle* load_rectangle(const YAML::Node& node);
         Button* load_button(const YAML::Node& node);
+        Image* load_image(const YAML::Node& node);
     };
 }
 

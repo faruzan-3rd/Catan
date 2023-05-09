@@ -2,6 +2,7 @@
 #define __CATAN_GRAPHICS_HPP
 
 #include "catan/board.hpp"
+#include "catan/shared.hpp"
 
 using str = std::string;
 using sprt = sf::Sprite;
@@ -41,7 +42,8 @@ namespace ctn{
             tx_board_objects,
             tx_environment,
             tx_tilemap,
-            tx_dice;
+            tx_dice,
+            tx_ui;
 
         // In-game sprite map
         std::map<str, sprt>
@@ -49,13 +51,15 @@ namespace ctn{
             sp_board_obj,
             sp_board_obj_preview,
             sp_harbor,
-            sp_dices;
+            sp_dices,
+            sp_players;
         
         // Font
         sf::Font ft_mario;
 
         // UI
         was::UIScheme ui;
+        was::UIScheme player_info;
         std::unique_ptr<was::Text>
             txt_token;
 
@@ -69,7 +73,7 @@ namespace ctn{
 
         void load_sprites(const YAML::Node& config_, sf::RenderWindow* window_);
 
-        void draw(const Board* board);
+        void draw(const Board* board, PlayerInfo player);
 
         void update(const was::MouseManager& mouse);
 
@@ -77,7 +81,7 @@ namespace ctn{
             ui.get_ptr_by_name(ui_name)->set_function(func);
         }
 
-        void set_preview_build(const str& color, int build_type, int id, Board* board);
+        void set_preview_build(const str& color, SelectionType type, int id, Board* board);
 
         void enable_dice(int dice_1, int dice_2){gracfg.dice_1 = dice_1; gracfg.dice_2 = dice_2; gracfg.dices_enabled = true; }
 

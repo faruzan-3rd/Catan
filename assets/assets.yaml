@@ -1,6 +1,16 @@
 Test:
   font: "assets/fonts/mariomaker.ttf"
 
+UI:
+  texture: "assets/art/ui.png"
+
+  player_icns:
+    Sprites:
+      yellow: [0, 64, 32, 32]
+      red: [32, 64, 32, 32]
+      green: [64, 64, 32, 32]
+      blue: [96, 64, 32, 32]
+
 Tiles:
   texture: "assets/art/tilemap.png"
   scale: 2
@@ -21,7 +31,7 @@ Environment:
     texture: "assets/art/environment.png"
 
     Sea:
-      size: [18, 13]
+      size: [21, 13]
       scale: 2
       sprite: [0, 0, 64, 64]
 

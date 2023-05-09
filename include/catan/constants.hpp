@@ -106,6 +106,12 @@ namespace ctn{
         TRADE{3},
         BUILD{4};
 
+    enum class SelectionType{
+        Settlement,
+        Path,
+        Card,
+        None
+    };
     static const int
         PLACE{100},
         PATH{101},
@@ -135,5 +141,15 @@ namespace ctn{
         TOKEN{"token"},
         SEA{"sea"},
         ROBBER{"robber"};
+
+    enum class PlayerType{
+        AI,
+        HUMAN
+    };
+
+    enum class UIButton{
+        Build,
+        DiceRoll
+    };
 }
 #endif

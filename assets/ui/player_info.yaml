@@ -1,0 +1,105 @@
+some-stuff:
+  - &mariomaker assets/fonts/mariomaker.ttf
+
+player0:
+  scheme:
+    - type: text
+      name: cur_player_name
+      text: "Player 0"
+      position: [930, 650]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 20
+      
+    - type: image
+      name: icon
+      text: "0"
+      position: [880, 650]
+      texture: "assets/art/ui.png"
+      sprite: [0, 64, 32, 32]
+  
+    # ORE
+    - type: image
+      name: ore_icn
+      position: [880, 690]
+      texture: "assets/art/ui.png"
+      sprite: [160, 64, 16, 16]
+      scale: 2
+    
+    - type: text
+      name: ore_num
+      text: "0"
+      position: [920, 695]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 15
+    
+
+    # BRICK
+    - type: image
+      name: brick_icn
+      position: [950, 690]
+      texture: "assets/art/ui.png"
+      sprite: [176, 64, 16, 16]
+      scale: 2
+      
+    - type: text
+      name: brick_num
+      text: "0"
+      position: [990, 695]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 15
+
+
+    # WOOL
+    - type: image
+      name: wool_icn
+      position: [1020, 690]
+      texture: "assets/art/ui.png"
+      sprite: [192, 64, 16, 16]
+      scale: 2
+    
+    - type: text
+      text: "0"
+      name: wool_num
+      position: [1060, 695]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 15
+    
+
+    # WOOD
+    - type: image
+      name: wood_icn
+      position: [1090, 690]
+      texture: "assets/art/ui.png"
+      sprite: [208, 64, 16, 16]
+      scale: 2
+    
+    - type: text
+      text: "0"
+      name: wood_num
+      position: [1130, 695]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 15
+
+
+    # WHEAT
+    - type: image
+      name: wheat_icn
+      position: [1160, 690]
+      texture: "assets/art/ui.png"
+      sprite: [224, 64, 16, 16]
+      scale: 2
+    
+    - type: text
+      text: "0"
+      name: wheat_num
+      position: [1200, 695]
+      font: *mariomaker
+      color: [0, 0, 0]
+      size: 15
+    
+    

@@ -12,27 +12,10 @@
 #include "catan/player.hpp"
 #include "wastils/UI.hpp"
 #include "catan/graphics.hpp"
-
-extern std::vector<ctn::Player> players;
+#include "catan/shared.hpp"
 
 
 namespace ctn{
-    struct GameState{
-        bool setup_phase = true;
-        int 
-            finished_players_num = 0,
-            last_placed_settlement = -1;
-        bool 
-            second_tour = false,
-            can_place_settlement = true,
-            can_place_path = false;
-        int
-            dice1_result = -1,
-            dice2_result = -1;
-
-        GameState() = default;
-    };
-
     class State{
         std::string name;
         std::function<void()> onEnter;
@@ -88,11 +71,8 @@ namespace ctn{
         GameState gamestate;
         Board* board;
         was::UIScheme* ui;
-        ctn::Graphics* graphics;
-
-        int current_player = 0;
-        int selected_id = -1;
-        int selection_type = -1;
+        Graphics* graphics;
+        PlayersManager* playersmng;
 
         public:
         ProgressManager() = default;
@@ -110,6 +90,7 @@ namespace ctn{
         }
         void set_state(const std::string& name){current_state = name; }
         void build_game_logic();
+        const str& get_current_color(){return playersmng->get_current_color(gamestate.current_player); }
     };
 }
 

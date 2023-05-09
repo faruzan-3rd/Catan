@@ -53,7 +53,7 @@ namespace ctn{
     class Place{
         vec2f pos;
         std::vector<int> connected_to;
-        std::vector<std::string> available_resources;
+        std::vector<int> adjacent_tiles;
         int harbor_id;
         int id;
         str
@@ -64,7 +64,7 @@ namespace ctn{
         Place():
             pos{vec2f(0, 0)},
             connected_to{{}},
-            available_resources{{}},
+            adjacent_tiles{},
             harbor_id{-1},
             id{-1},
             house_type{ctn::NONE},
@@ -77,6 +77,7 @@ namespace ctn{
                 const str& color_):
             pos{pos_},
             connected_to{connected_to_},
+            adjacent_tiles{},
             harbor_id{-1},
             id{id_},
             house_type{ctn::NONE},
@@ -89,10 +90,11 @@ namespace ctn{
         int get_harbor() const {return harbor_id; }
         void set_harbor(int harbor_id_) {harbor_id = harbor_id_; }
         int get_id() const {return id; }
-        void add_resource(const std::string& resource) {available_resources.push_back(resource); }
+        void add_adj_tile(int tile_id) {adjacent_tiles.push_back(tile_id); }
         const str& get_color() const {return color; }
         const str& get_type() const {return house_type; }
         void set_settlement(const str& type_, const str& color_){house_type = type_; color = color_; }
+        std::vector<int> get_adjacent_tiles() const{return adjacent_tiles; }
     };
 
     class Path{
@@ -201,9 +203,10 @@ namespace ctn{
 
         void build_settlement(int id, const str& type_, const str& color);
         void build_path(int id, const str& color);
+        std::vector<str> get_obtainable_resources(int settlement_id);
 
-        bool can_build_settlement_here(const str& color, int id, bool is_setup_phase);
-        bool can_build_path_here(const str& color, int id, int required_adj_settlement=-1);
+        bool can_build_settlement_here(const str& color, int id, bool is_setup_phase) const;
+        bool can_build_path_here(const str& color, int id, int required_adj_settlement=-1) const;
 
         private:
         void make_path_if_exist(Place& pl1, Place& pl2, const std::vector<vec2f>& directions);

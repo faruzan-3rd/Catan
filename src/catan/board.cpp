@@ -107,15 +107,16 @@ void ctn::Board::generate_harbors(){
 
 
 void ctn::Board::attribute_resources(){
-    typedef std::pair<vec2f, std::string> Resource;
+    typedef std::pair<vec2f, int> Resource;
 
     int max_resources = config["max"].as<int>();
     int search_distance = config["search_distance"].as<int>();
     vec2f tiles_offset(config["tiles_center_offset"][0].as<int>(), config["tiles_center_offset"][1].as<int>());
     
     std::vector<Resource> resources;
-    for(const ctn::BoardTile& bt : tiles){
-        resources.push_back(std::make_pair(bt.get_position() + tiles_offset, bt.get_tile_type()));
+    for(int i = 0; i < (int)tiles.size(); i++){
+        const ctn::BoardTile& bt = tiles[i];
+        resources.push_back(std::make_pair(bt.get_position() + tiles_offset, i));
     }
 
     for(Place& place : places){
@@ -125,7 +126,7 @@ void ctn::Board::attribute_resources(){
 
         for(int i = 0; i < max_resources; i++){
             if(was::distance_sq(place.get_position(), resources[i].first) > search_distance * search_distance) continue;
-            place.add_resource(resources[i].second);
+            place.add_adj_tile(resources[i].second);
         }
     }
 }
@@ -328,7 +329,7 @@ void ctn::Board::build_path(int id, const str& color){
     paths[id].set_path(color);
 }
 
-bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_setup_phase){
+bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_setup_phase) const{
     if(!(0 <= id && id < (int)places.size())) return false;
 
     bool ok = false;
@@ -355,10 +356,10 @@ bool ctn::Board::can_build_settlement_here(const str& color, int id, bool is_set
     return ok;
 }
 
-bool ctn::Board::can_build_path_here(const str& color, int id, int required_adj_settlement){
+bool ctn::Board::can_build_path_here(const str& color, int id, int required_adj_settlement) const{
     if(!(0 <= id && id < (int)paths.size())) return false;
 
-    auto selected_path = paths[id];
+    auto selected_path = paths.at(id);
     
     // Condition 0: Must be adjacent to the settlement if specified
     if(required_adj_settlement != -1){
@@ -390,4 +391,18 @@ bool ctn::Board::can_build_path_here(const str& color, int id, int required_adj_
     }
 
     return false;
+}
+
+std::vector<str> ctn::Board::get_obtainable_resources(int settlement_id){
+    std::vector<str> out;
+    for(int tile : places[settlement_id].get_adjacent_tiles()){
+        if(tile == robber_tile) continue;
+        const str& tile_type = tiles[tile].get_tile_type();
+
+        if(tile_type != ctn::DESERT){
+            out.push_back(tile_type);
+        }
+    }
+
+    return out;
 }

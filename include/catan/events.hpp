@@ -5,6 +5,7 @@
 #include "wastils/input.hpp"
 #include "catan/board.hpp"
 #include "catan/graphics.hpp"
+#include "catan/constants.hpp"
 
 namespace ctn{
     class EventManager{
@@ -28,7 +29,8 @@ namespace ctn{
         {}
 
         void update();
-        void build_validate();
+        bool select(SelectionType type, int id, const str& color);
+        bool build_validate();
     };
 }
 

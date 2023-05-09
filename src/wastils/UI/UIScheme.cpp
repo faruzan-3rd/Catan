@@ -93,6 +93,9 @@ void was::UIScheme::load(const YAML::Node& node){
         else if(elm_type == "button"){
             elm_ptr = load_button(elm);
         }
+        else if(elm_type == "image"){
+            elm_ptr = load_image(elm);
+        }
 
         if(elm_ptr != nullptr){
             element_ptrs[name] = elm_ptr;
@@ -161,4 +164,29 @@ was::Button* was::UIScheme::load_button(const YAML::Node& node){
         position,
         window_ptr
     );    
+}
+
+was::Image* was::UIScheme::load_image(const YAML::Node& node){
+    vec2f position(
+        node["position"][0].as<int>(),
+        node["position"][1].as<int>()
+    );
+    sf::IntRect rect(
+        node["sprite"][0].as<int>(),
+        node["sprite"][1].as<int>(),
+        node["sprite"][2].as<int>(),
+        node["sprite"][3].as<int>()
+    );
+    sf::Texture texture;
+    texture.loadFromFile(node["texture"].as<std::string>());
+    sf::Sprite sprite;
+    sprite.setTextureRect(rect);
+    sprite.setPosition(position);
+
+    if (YAML::Node scale_node = node["scale"]) {
+        float scale = scale_node.as<float>();
+        sprite.setScale(sf::Vector2f(scale, scale));
+    }
+
+    return new Image(texture, sprite, window_ptr);
 }

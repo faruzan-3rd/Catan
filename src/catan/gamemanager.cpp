@@ -1,6 +1,5 @@
 #include "catan/gamemanager.hpp"
 
-std::vector<ctn::Player> players;
 
 ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): GameManager()
 {
@@ -15,17 +14,23 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): Ga
 
     graphics.load_sprites(config, window);
 
-    players.push_back(Player(ctn::RED));
-    players.push_back(Player(ctn::BLUE));
-    players.push_back(Player(ctn::GREEN));
-
     mouse = was::MouseManager(window);
+
 
     progressmng.graphics = &graphics;
     progressmng.board = &board;
+    progressmng.playersmng = &playersmng;
     progressmng.ui = graphics.get_ui_ptr();
     progressmng.build_game_logic();
     eventmanager = EventManager(&mouse, &progressmng, &board, &graphics);
+    PlayerEventCalls calls(
+        std::bind(&EventManager::select, &eventmanager, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+        std::bind(&EventManager::build_validate, &eventmanager),
+        std::bind(&ProgressManager::execute_transition, &progressmng, "roll_dices")
+    );
+    playersmng.add_player(PlayerType::HUMAN, RED, calls);
+    playersmng.add_player(PlayerType::HUMAN, BLUE, calls);
+    playersmng.add_player(PlayerType::HUMAN, YELLOW, calls);
 
     attribute_functions_to_ui();
 
@@ -34,8 +39,8 @@ ctn::GameManager::GameManager(YAML::Node config_, sf::RenderWindow* window_): Ga
 }
 
 void ctn::GameManager::attribute_functions_to_ui(){
-    graphics.set_function("validate_build", std::bind(&EventManager::build_validate, &eventmanager));
-    graphics.set_function("roll_dice", std::bind(&ProgressManager::execute_transition, &progressmng, "roll_dices"));
+    graphics.set_function("validate_build", std::bind([this](){this->playersmng.UI_button_input(UIButton::Build, this->progressmng.gamestate); }));
+    graphics.set_function("roll_dice", [this](){this->playersmng.UI_button_input(UIButton::DiceRoll, this->progressmng.gamestate); });
 }
 
 bool ctn::GameManager::tick(){
@@ -60,7 +65,7 @@ bool ctn::GameManager::tick(){
     2. UI/AI INPUT
     */
     graphics.update(mouse);
-    eventmanager.update();
+    playersmng.update(mouse, board, progressmng.gamestate);
     
     draw();
 
@@ -68,5 +73,5 @@ bool ctn::GameManager::tick(){
 }
 
 void ctn::GameManager::draw(){
-    graphics.draw(&board);
+    graphics.draw(&board, playersmng.get_current_player_info(progressmng.gamestate.current_player));
 }

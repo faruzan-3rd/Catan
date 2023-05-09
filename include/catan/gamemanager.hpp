@@ -36,6 +36,7 @@ namespace ctn{
         ctn::Graphics graphics;
         ctn::ProgressManager progressmng;
         ctn::EventManager eventmanager;
+        ctn::PlayersManager playersmng;
 
         public:
         GameManager() = default;

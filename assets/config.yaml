@@ -1,7 +1,7 @@
 Title: Catan
 
 define:
-  - &width 1200
+  - &width 1400
   - &height 800
 
 Window:
@@ -17,4 +17,5 @@ Game:
   framerate: 120
   assets: "assets/assets.yaml"
   board: "assets/board.yaml"
-  ui: "assets/ui.yaml"
+  ui: "assets/ui/main.yaml"
+  player_info: "assets/ui/player_info.yaml"

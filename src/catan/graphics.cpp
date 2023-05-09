@@ -26,6 +26,9 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     if(!tx_dice.loadFromFile(assets_cfg["Dice"]["texture"].as<str>())){
         std::cout << "Dice texture load failed" << std::endl;
     }
+    if(!tx_ui.loadFromFile(assets_cfg["UI"]["texture"].as<str>())){
+        std::cout << "UI texture load failed" << std::endl;
+    }
     ft_mario.loadFromFile(assets_cfg["Test"]["font"].as<str>());
     std::cout << "Textures loaded!" << std::endl;
 
@@ -132,10 +135,18 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     was::load_config(ui_scheme, config_["Game"]["ui"].as<str>());
     ui = was::UIScheme(window);
     ui.load(ui_scheme["game"]);
+
+    YAML::Node player_info_config;
+    was::load_config(player_info_config, config_["Game"]["player_info"].as<str>());
+    player_info = was::UIScheme(window);
+    player_info.load(player_info_config["player0"]);
+
+    sp_players = ctn::load_sprites(assets_cfg["UI"]["player_icns"], tx_ui,
+                                    {ctn::YELLOW, ctn::RED, ctn::GREEN, ctn::BLUE});
 }
 
 
-void ctn::Graphics::draw(const Board* board)
+void ctn::Graphics::draw(const Board* board, PlayerInfo player)
     {
     const std::vector<ctn::BoardTile>& tiles = board->get_tiles();
     const std::vector<ctn::Place>& places = board->get_places();
@@ -212,23 +223,33 @@ void ctn::Graphics::draw(const Board* board)
 
     // 6. UI
     ui.draw();
+
+    str name = "Player " + str(1, '0' + player.id);
+    player_info.get_ptr_by_name("cur_player_name")->set_text(name);
+    sf::Sprite icon = sp_players[player.color];
+    icon.setPosition(player_info.get_ptr_by_name("icon")->get_position());
+    player_info.get_ptr_by_name("icon")->set_new_image(tx_ui, icon);
+    for(const str& material : ctn::materials){
+        player_info.get_ptr_by_name(material + "_num")->set_text(std::to_string(player.get_resource_quantity(material)));
+    }
+    player_info.draw();
 }
 
 void ctn::Graphics::update(const was::MouseManager& mouse){
     ui.update(mouse);
 }
 
-void ctn::Graphics::set_preview_build(const str& color, int build_type, int id, Board* board){
-    if(build_type == -1){
+void ctn::Graphics::set_preview_build(const str& color, SelectionType type, int id, Board* board){
+    if(type == SelectionType::None){
         preview_type = ctn::NONE;
         preview_pos = vec2f(0, 0);
     }
-    else if(build_type == ctn::PLACE){
+    else if(type == SelectionType::Settlement){
         preview_type = color + ctn::HOUSE;
         preview_pos = board->get_places()[id].get_position();
         
     }
-    else if(build_type == ctn::PATH){
+    else if(type == SelectionType::Path){
         preview_type = color + board->get_paths()[id].get_path_type();
         preview_pos = board->get_paths()[id].get_position();
     }
