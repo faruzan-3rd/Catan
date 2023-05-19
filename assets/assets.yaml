@@ -25,6 +25,8 @@ Tiles:
     ore: [192, 0, 64, 51]
     brick: [0, 51, 64, 51]
     wood: [64, 51, 64, 51]
+  
+  select-indicator: [192, 208, 64, 48]
 
 
 Environment:

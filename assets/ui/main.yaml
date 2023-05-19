@@ -1,5 +1,6 @@
 some-stuff:
   - &mariomaker assets/fonts/mariomaker.ttf
+  - &texture assets/art/ui.png
 
 game:
   scheme:
@@ -30,11 +31,24 @@ game:
     - type: button
       name: validate_build
       position: [50, 700]
-      texture: "assets/art/ui.png"
+      texture: *texture
       sprite: [0, 0, 64, 64]
 
     - type: button
       name: roll_dice
       position: [120, 700]
-      texture: "assets/art/ui.png"
+      texture: *texture
       sprite: [64, 0, 64, 64]
+
+    - type: button
+      name: select_tile
+      position: [90, 700]
+      texture: *texture
+      sprite: [128, 0, 64, 64]
+
+    - type: button
+      name: confirm_dices
+      position: [80, 730]
+      texture: *texture
+      sprite: [202, 230, 54, 26]
+      scale: 2

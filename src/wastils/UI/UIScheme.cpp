@@ -157,6 +157,10 @@ was::Button* was::UIScheme::load_button(const YAML::Node& node){
     texture.loadFromFile(node["texture"].as<std::string>());
     sf::Sprite mouse_sprite;
     mouse_sprite.setTextureRect(rect);
+    if (YAML::Node scale_node = node["scale"]) {
+        float scale = scale_node.as<float>();
+        mouse_sprite.setScale(sf::Vector2f(scale, scale));
+    }
 
     return new Button(
         texture, 

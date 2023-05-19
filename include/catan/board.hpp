@@ -170,9 +170,10 @@ namespace ctn{
         int get_token() const {return token; }
         void set_token(const int& token_) {token = token_; }
         const str& get_tile_type() const {return tile_type; }
+        bool is_clicked(const vec2f& mouse_pos) const;
 
     };
-    
+
     class Board{
         YAML::Node config;
 
@@ -193,7 +194,10 @@ namespace ctn{
         void attribute_resources();
         int get_clicked_place(const vec2f& mouse_pos) const;
         int get_clicked_path(const vec2f& mouse_pos) const;
+        int get_clicked_tile(const vec2f& mouse_pos) const;
         int get_robber_tile() const{return robber_tile; }
+
+        void set_robber_location(int new_location) {robber_tile = new_location; }
 
         const std::vector<ctn::Place>& get_places() const{return places; }
         const std::vector<ctn::Harbor>& get_harbors() const{return harbors; }

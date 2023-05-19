@@ -15,6 +15,7 @@
 #include "catan/shared.hpp"
 
 
+
 namespace ctn{
     class State{
         std::string name;
@@ -75,15 +76,15 @@ namespace ctn{
         PlayersManager* playersmng;
 
         public:
-        ProgressManager() = default;
+        ProgressManager();
         
         void add_state(const State& state){states[state.get_name()] = state; }
         void add_transition(const Transition& transition){transitions[transition.get_name()] = transition; };
         bool execute_transition(const std::string& transition_name){
             if(transitions[transition_name].get_from_state() != current_state || !transitions[transition_name].can_execute()) return false;
 
-            transitions[transition_name].execute_callback();
             current_state = transitions[transition_name].get_to_state();
+            transitions[transition_name].execute_callback();
             states[current_state].on_enter();
 
             return true;
@@ -93,7 +94,6 @@ namespace ctn{
         const str& get_current_color(){return playersmng->get_current_color(gamestate.current_player); }
     };
 }
-
 
 
 #endif

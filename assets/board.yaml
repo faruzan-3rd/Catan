@@ -97,7 +97,7 @@ harbor-mats-num:
     - 2
     - 3
 
-robber-offset: [50, 10]
+robber-offset: [50, 35]
 
 dice1-pos: [194, 732]
 dice2-pos: [237, 732]

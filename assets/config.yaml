@@ -19,3 +19,4 @@ Game:
   board: "assets/board.yaml"
   ui: "assets/ui/main.yaml"
   player_info: "assets/ui/player_info.yaml"
+  resource_select: "assets/ui/resource_select.yaml"

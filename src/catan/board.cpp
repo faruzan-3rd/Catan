@@ -14,6 +14,12 @@ bool ctn::Path::is_clicked(const vec2f& mouse_pos) const{
         (pos.y <= mouse_pos.y && mouse_pos.y <= pos.y + 30);
 }
 
+bool ctn::BoardTile::is_clicked(const vec2f& mouse_pos) const{
+    return 
+        (pos.x + 5 <= mouse_pos.x && mouse_pos.x <= pos.x + 110) &&
+        (pos.y + 5 <= mouse_pos.y && mouse_pos.y <= pos.y + 90);
+}
+
 
 ctn::Harbor::Harbor(
             const std::string& req_mat_, 
@@ -318,6 +324,16 @@ int ctn::Board::get_clicked_path(const vec2f& mouse_pos) const{
             return i;
         }
     }
+    return -1;
+}
+
+int ctn::Board::get_clicked_tile(const vec2f& mouse_pos) const{
+    for(int i = 0; i < (int)tiles.size(); i++){
+        if(tiles[i].is_clicked(mouse_pos)){
+            return i;
+        }
+    }
+
     return -1;
 }
 

@@ -30,7 +30,10 @@ namespace ctn{
 
         void update();
         bool select(SelectionType type, int id, const str& color);
-        bool build_validate();
+        bool confirm();
+        bool confirm_dices();
+        void add_resource(const str& resource);
+        void remove_resource(const str& resource);
     };
 }
 

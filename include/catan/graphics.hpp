@@ -58,8 +58,11 @@ namespace ctn{
         sf::Font ft_mario;
 
         // UI
-        was::UIScheme ui;
-        was::UIScheme player_info;
+        was::UIScheme 
+            ui,
+            player_info,
+            resource_select;
+
         std::unique_ptr<was::Text>
             txt_token;
 
@@ -73,9 +76,9 @@ namespace ctn{
 
         void load_sprites(const YAML::Node& config_, sf::RenderWindow* window_);
 
-        void draw(const Board* board, PlayerInfo player);
+        void draw(const Board* board, PlayerInfo player, const GameState& state);
 
-        void update(const was::MouseManager& mouse);
+        void update(const was::MouseManager& mouse, const GameState& state);
 
         void set_function(const str& ui_name, std::function<void()> func){
             ui.get_ptr_by_name(ui_name)->set_function(func);
@@ -88,6 +91,8 @@ namespace ctn{
         void disable_dice(){gracfg.dices_enabled = false; };
 
         was::UIScheme* get_ui_ptr() {return &ui; }
+
+        was::UIScheme* get_resource_ptr(){return &resource_select;} 
     };
 }
 

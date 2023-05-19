@@ -38,7 +38,12 @@ namespace ctn{
             color{color},
             id{id_},
             calls{calls_}
-        {}
+        {
+            // tmp
+            owned_resources[ctn::WOOD] = 4;
+            owned_resources[ctn::WHEAT] = 3;
+            owned_resources[ctn::BRICK] = 2;
+        }
 
         const str& get_color() const {return color; }
 
@@ -84,7 +89,7 @@ namespace ctn{
             players[current_player].gain_resource(resource_type, num);
         }
 
-        const PlayerInfo get_current_player_info(int current_player) const{
+        const PlayerInfo get_player_info(int current_player) const{
             return players[current_player].get_info();
         }
     };

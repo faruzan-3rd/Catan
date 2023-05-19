@@ -110,12 +110,14 @@ namespace ctn{
         Settlement,
         Path,
         Card,
+        Tile,
         None
     };
     static const int
-        PLACE{100},
-        PATH{101},
-        CARD{102};
+        SETTLEMENT{0b0001},
+        PATH{0b0010},
+        CARD{0b0100},
+        TILE{0b1000};
 
     // Dice stuff
     static const std::string
@@ -140,7 +142,8 @@ namespace ctn{
         HARBOR{"harbor"},
         TOKEN{"token"},
         SEA{"sea"},
-        ROBBER{"robber"};
+        ROBBER{"robber"},
+        TILE_PREVIEW{"tile_preview"};
 
     enum class PlayerType{
         AI,
@@ -149,7 +152,9 @@ namespace ctn{
 
     enum class UIButton{
         Build,
-        DiceRoll
+        DiceRoll,
+        Confirm_dices,
+        Confirm_tile
     };
 }
 #endif

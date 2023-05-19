@@ -101,6 +101,7 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
         board_cfg["dice2-pos"][0].as<int>(),
         board_cfg["dice2-pos"][1].as<int>()
     );
+    sp_board_obj_preview[ctn::TILE_PREVIEW] = ctn::load_sprite(assets_cfg["Tiles"]["select-indicator"], tx_tilemap, 2.0f);
     std::cout << "Board objects loaded!" << std::endl;
 
 
@@ -128,7 +129,6 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
                             tx_environment,
                             assets_cfg["Environment"]["Sea"]["scale"].as<float>()
                             );
-
     std::cout << "Tilemap loaded!" << std::endl;
 
     YAML::Node ui_scheme;
@@ -141,12 +141,18 @@ void ctn::Graphics::load_sprites(const YAML::Node& config_, sf::RenderWindow* wi
     player_info = was::UIScheme(window);
     player_info.load(player_info_config["player0"]);
 
+    YAML::Node resource_select_config;
+    was::load_config(resource_select_config, config_["Game"]["resource_select"].as<str>());
+    resource_select = was::UIScheme(window);
+    resource_select.load(resource_select_config);
+
+
     sp_players = ctn::load_sprites(assets_cfg["UI"]["player_icns"], tx_ui,
                                     {ctn::YELLOW, ctn::RED, ctn::GREEN, ctn::BLUE});
 }
 
 
-void ctn::Graphics::draw(const Board* board, PlayerInfo player)
+void ctn::Graphics::draw(const Board* board, PlayerInfo player, const GameState& state)
     {
     const std::vector<ctn::BoardTile>& tiles = board->get_tiles();
     const std::vector<ctn::Place>& places = board->get_places();
@@ -222,21 +228,33 @@ void ctn::Graphics::draw(const Board* board, PlayerInfo player)
     }
 
     // 6. UI
-    ui.draw();
-
     str name = "Player " + str(1, '0' + player.id);
-    player_info.get_ptr_by_name("cur_player_name")->set_text(name);
     sf::Sprite icon = sp_players[player.color];
     icon.setPosition(player_info.get_ptr_by_name("icon")->get_position());
+    player_info.get_ptr_by_name("cur_player_name")->set_text(name);
     player_info.get_ptr_by_name("icon")->set_new_image(tx_ui, icon);
     for(const str& material : ctn::materials){
         player_info.get_ptr_by_name(material + "_num")->set_text(std::to_string(player.get_resource_quantity(material)));
     }
+
+    if(state.resource_select){
+        for(const str& mat : ctn::materials){
+            was::BaseUIElement* text = resource_select.get_ptr_by_name(mat + "_select");
+            text->set_text("-" + std::to_string(state.get_selected_resource(mat)));
+        }
+    }
+
+    ui.draw();
     player_info.draw();
+    if(state.resource_select)
+        resource_select.draw();
 }
 
-void ctn::Graphics::update(const was::MouseManager& mouse){
+void ctn::Graphics::update(const was::MouseManager& mouse, const GameState& state){
     ui.update(mouse);
+    if(state.resource_select){
+        resource_select.update(mouse);
+    }
 }
 
 void ctn::Graphics::set_preview_build(const str& color, SelectionType type, int id, Board* board){
@@ -247,11 +265,14 @@ void ctn::Graphics::set_preview_build(const str& color, SelectionType type, int 
     else if(type == SelectionType::Settlement){
         preview_type = color + ctn::HOUSE;
         preview_pos = board->get_places()[id].get_position();
-        
     }
     else if(type == SelectionType::Path){
         preview_type = color + board->get_paths()[id].get_path_type();
         preview_pos = board->get_paths()[id].get_position();
+    }
+    else if(type == SelectionType::Tile){
+        preview_type = ctn::TILE_PREVIEW;
+        preview_pos = board->get_tiles()[id].get_position();
     }
     else{
         std::cout << "Preview failed" << std::endl;
