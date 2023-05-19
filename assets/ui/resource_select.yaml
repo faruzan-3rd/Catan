@@ -5,10 +5,11 @@ some-stuff:
   - &minus_sprite [160, 240, 16, 16]
   - &plus_sprite [176, 240, 16, 16]
 
+relative: [800, 700]
 scheme:
   - type: button
     name: confirm
-    position: [80, 730]
+    position: [400, 20]
     texture: *texture
     sprite: [202, 230, 54, 26]
     scale: 2
@@ -16,7 +17,7 @@ scheme:
   # ORE
   - type: text
     name: ore_select
-    position: [880, 730]
+    position: [80, 30]
     size: 15
     font: *mariomaker
     text: "-0"
@@ -24,13 +25,13 @@ scheme:
 
   - type: button
     name: ore_minus
-    position: [875, 750]
+    position: [75, 50]
     texture: *texture
     sprite: *minus_sprite
   
   - type: button
     name: ore_plus
-    position: [896, 750]
+    position: [96, 50]
     texture: *texture
     sprite: *plus_sprite
 
@@ -38,7 +39,7 @@ scheme:
   # BRICK
   - type: text
     name: brick_select
-    position: [950, 730]
+    position: [150, 30]
     size: 15
     font: *mariomaker
     text: "-0"
@@ -46,13 +47,13 @@ scheme:
 
   - type: button
     name: brick_minus
-    position: [945, 750]
+    position: [145, 50]
     texture: *texture
     sprite: *minus_sprite
   
   - type: button
     name: brick_plus
-    position: [966, 750]
+    position: [166, 50]
     texture: *texture
     sprite: *plus_sprite
 
@@ -60,7 +61,7 @@ scheme:
   # WOOL
   - type: text
     name: wool_select
-    position: [1020, 730]
+    position: [220, 30]
     size: 15
     font: *mariomaker
     text: "-0"
@@ -68,13 +69,13 @@ scheme:
 
   - type: button
     name: wool_minus
-    position: [1015, 750]
+    position: [215, 50]
     texture: *texture
     sprite: *minus_sprite
   
   - type: button
     name: wool_plus
-    position: [1036, 750]
+    position: [236, 50]
     texture: *texture
     sprite: *plus_sprite
 
@@ -82,7 +83,7 @@ scheme:
   # WOOD
   - type: text
     name: wood_select
-    position: [1090, 730]
+    position: [290, 30]
     size: 15
     font: *mariomaker
     text: "-0"
@@ -90,13 +91,13 @@ scheme:
 
   - type: button
     name: wood_minus
-    position: [1085, 750]
+    position: [285, 50]
     texture: *texture
     sprite: *minus_sprite
   
   - type: button
     name: wood_plus
-    position: [1106, 750]
+    position: [306, 50]
     texture: *texture
     sprite: *plus_sprite
 
@@ -104,7 +105,7 @@ scheme:
   # WHEAT
   - type: text
     name: wheat_select
-    position: [1160, 730]
+    position: [360, 30]
     size: 15
     font: *mariomaker
     text: "-0"
@@ -112,12 +113,12 @@ scheme:
 
   - type: button
     name: wheat_minus
-    position: [1155, 750]
+    position: [355, 50]
     texture: *texture
     sprite: *minus_sprite
   
   - type: button
     name: wheat_plus
-    position: [1176, 750]
+    position: [376, 50]
     texture: *texture
     sprite: *plus_sprite

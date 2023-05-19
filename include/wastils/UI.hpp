@@ -17,15 +17,19 @@ namespace was{
     class BaseUIElement{
         protected:
         bool enabled;
+        vec2f position;
+        vec2f relative;
         sf::RenderWindow* window_ptr;
 
         public:
         BaseUIElement():
             enabled{true},
+            relative{vec2f{0, 0}},
             window_ptr{nullptr}
         {}
         BaseUIElement(sf::RenderWindow* window):
             enabled{true},
+            relative{vec2f{0, 0}},
             window_ptr{window}
         {}
         virtual ~BaseUIElement(){};
@@ -38,7 +42,7 @@ namespace was{
 
         virtual void set_font(const sf::Font& font_){}
 
-        virtual void set_position(const vec2f& pos){}
+        virtual void set_position(const vec2f& pos){position = pos; }
 
         virtual void set_thickness(int thickness){}
 
@@ -48,11 +52,15 @@ namespace was{
 
         void draw(){if(enabled) draw_(); }
 
-        virtual vec2f get_position(){ return vec2f(0, 0); }
+        virtual vec2f get_position(){ return position; }
 
         void update(const was::MouseManager& mouse){if(enabled) update_(mouse); }
 
         virtual void enable(const bool& enable_){enabled = enable_; }
+
+        void set_relative(const vec2f& origin){relative = origin; }
+
+        vec2f get_relative() const {return relative; }
 
         protected:
         virtual void update_(const was::MouseManager& mouse){}
@@ -79,7 +87,7 @@ namespace was{
             font{font_}
         {
             text.setFillColor(color);
-            text.setPosition(position);
+            set_position(position);
         }
 
         void set_text(const std::string& new_str) override{
@@ -99,11 +107,8 @@ namespace was{
             text.setFont(font);
         }
 
-        void set_position(const vec2f& pos) override{
-            text.setPosition(pos);
-        }
-
         void draw_() override{
+            text.setPosition(position + relative);
             window_ptr->draw(text);
         }
     };
@@ -114,22 +119,16 @@ namespace was{
         sf::RectangleShape rectangle;
 
         public:
-        Rectangle():
-            BaseUIElement{},
-            rectangle{}
-        {}
+        Rectangle() = default;
         Rectangle(
             const sf::IntRect& rect, 
             const sf::Color& color, 
             const int thickness, 
             sf::RenderWindow* window):
+
             BaseUIElement{window},
             rectangle{vec2f{(float)rect.left, (float)rect.top}}
         {}
-
-        void set_position(const vec2f& pos) override{
-            rectangle.setPosition(pos);
-        }
 
         void set_color(const sf::Color& color) override{
             rectangle.setOutlineColor(color);
@@ -140,11 +139,8 @@ namespace was{
         }
 
         void draw_() override{
+            rectangle.setPosition(position + relative);
             window_ptr->draw(rectangle);
-        }
-
-        vec2f get_position() override{
-            return rectangle.getPosition();
         }
     };
 
@@ -155,20 +151,13 @@ namespace was{
 
         public:
         Image() = default;
-        Image(const sf::Texture& texture_, const sf::Sprite& sprite_, sf::RenderWindow* window):
+        Image(const sf::Texture& texture_, const sf::Sprite& sprite_, const vec2f& position, sf::RenderWindow* window):
             BaseUIElement(window),
             texture(texture_),
             sprite(sprite_) 
         {
-            sprite.setTexture(texture);    
-        }
-        
-        vec2f get_position() override{
-            return sprite.getPosition();
-        }
-
-        void set_position(const vec2f& pos) override{
-            sprite.setPosition(pos);
+            sprite.setTexture(texture);
+            set_position(position);
         }
 
         void set_new_image(const sf::Texture& texture_, const sf::Sprite& sprite_) override{
@@ -177,6 +166,7 @@ namespace was{
         }
         
         void draw_() override{
+            sprite.setPosition(position + relative);
             window_ptr->draw(sprite);
         }
     };
@@ -211,11 +201,7 @@ namespace was{
             trigger_button{trigger}
         {
             button_sprite.setTexture(texture);
-            button_sprite.setPosition(position);
-        }
-
-        void set_position(const vec2f& position) override{
-            button_sprite.setPosition(position);
+            set_position(position);
         }
 
         void set_function(std::function<void()> func_) override{
@@ -223,6 +209,7 @@ namespace was{
         }
 
         void draw_() override{
+            button_sprite.setPosition(position + relative);
             window_ptr->draw(button_sprite);
         }
 

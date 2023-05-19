@@ -2,13 +2,14 @@
 # CC = clang++
 
 CC = g++
-CFLAGS = -std=c++20 -g -Wall
+CFLAGS = -std=c++20 -g -Wall -Wno-unknown-pragmas
 TARGET = app
 
 SRCS = src/main.cpp src/wastils/config.cpp src/catan/assets.cpp src/catan/board.cpp\
 		src/catan/gamemanager.cpp src/wastils/UI/UI.cpp src/wastils/UI/UIScheme.cpp\
 		src/wastils/geometry.cpp src/wastils/input.cpp src/catan/graphics.cpp\
 		src/catan/logic.cpp src/catan/player.cpp src/catan/events.cpp\
+		src/catan/phases/common.cpp src/catan/phases/early.cpp src/catan/phases/trade.cpp
 
 
 OBJS = $(SRCS:.cpp=.o)

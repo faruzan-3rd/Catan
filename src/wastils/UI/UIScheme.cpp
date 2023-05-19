@@ -79,6 +79,10 @@ was::BaseUIElement* was::UIScheme::get_ptr_by_name(const std::string& name){
 }
 
 void was::UIScheme::load(const YAML::Node& node){
+    vec2f relative(0, 0);
+    if (YAML::Node relative_node = node["relative"]){
+        relative = vec2f(node["relative"][0].as<int>(), node["relative"][1].as<int>());
+    }
     for(auto elm : node["scheme"]){
         was::BaseUIElement* elm_ptr = nullptr;
         std::string elm_type = elm["type"].as<std::string>();
@@ -98,6 +102,7 @@ void was::UIScheme::load(const YAML::Node& node){
         }
 
         if(elm_ptr != nullptr){
+            elm_ptr->set_relative(relative);
             element_ptrs[name] = elm_ptr;
         }
     }
@@ -185,12 +190,11 @@ was::Image* was::UIScheme::load_image(const YAML::Node& node){
     texture.loadFromFile(node["texture"].as<std::string>());
     sf::Sprite sprite;
     sprite.setTextureRect(rect);
-    sprite.setPosition(position);
 
     if (YAML::Node scale_node = node["scale"]) {
         float scale = scale_node.as<float>();
         sprite.setScale(sf::Vector2f(scale, scale));
     }
 
-    return new Image(texture, sprite, window_ptr);
+    return new Image(texture, sprite, position, window_ptr);
 }

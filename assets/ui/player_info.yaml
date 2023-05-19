@@ -4,11 +4,12 @@ some-stuff:
   - &black [0, 0, 0]
 
 player0:
+  relative: [800, 600]
   scheme:
     - type: text
       name: cur_player_name
       text: "Player 0"
-      position: [930, 650]
+      position: [130, 50]
       font: *mariomaker
       color: *black
       size: 20
@@ -16,14 +17,14 @@ player0:
     - type: image
       name: icon
       text: "0"
-      position: [880, 650]
+      position: [80, 50]
       texture: *texture
       sprite: [0, 64, 32, 32]
   
     # ORE
     - type: image
       name: ore_icn
-      position: [880, 690]
+      position: [80, 90]
       texture: *texture
       sprite: [160, 64, 16, 16]
       scale: 2
@@ -31,7 +32,7 @@ player0:
     - type: text
       name: ore_num
       text: "0"
-      position: [920, 695]
+      position: [120, 95]
       font: *mariomaker
       color: *black
       size: 15
@@ -40,7 +41,7 @@ player0:
     # BRICK
     - type: image
       name: brick_icn
-      position: [950, 690]
+      position: [150, 90]
       texture: *texture
       sprite: [176, 64, 16, 16]
       scale: 2
@@ -48,7 +49,7 @@ player0:
     - type: text
       name: brick_num
       text: "0"
-      position: [990, 695]
+      position: [190, 95]
       font: *mariomaker
       color: *black
       size: 15
@@ -57,7 +58,7 @@ player0:
     # WOOL
     - type: image
       name: wool_icn
-      position: [1020, 690]
+      position: [220, 90]
       texture: *texture
       sprite: [192, 64, 16, 16]
       scale: 2
@@ -65,7 +66,7 @@ player0:
     - type: text
       text: "0"
       name: wool_num
-      position: [1060, 695]
+      position: [260, 95]
       font: *mariomaker
       color: *black
       size: 15
@@ -74,7 +75,7 @@ player0:
     # WOOD
     - type: image
       name: wood_icn
-      position: [1090, 690]
+      position: [290, 90]
       texture: *texture
       sprite: [208, 64, 16, 16]
       scale: 2
@@ -82,7 +83,7 @@ player0:
     - type: text
       text: "0"
       name: wood_num
-      position: [1130, 695]
+      position: [330, 95]
       font: *mariomaker
       color: *black
       size: 15
@@ -91,7 +92,7 @@ player0:
     # WHEAT
     - type: image
       name: wheat_icn
-      position: [1160, 690]
+      position: [360, 90]
       texture: *texture
       sprite: [224, 64, 16, 16]
       scale: 2
@@ -99,7 +100,7 @@ player0:
     - type: text
       text: "0"
       name: wheat_num
-      position: [1200, 695]
+      position: [400, 95]
       font: *mariomaker
       color: *black
       size: 15
